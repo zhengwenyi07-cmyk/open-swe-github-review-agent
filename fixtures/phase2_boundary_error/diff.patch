@@ -1,0 +1,10 @@
+diff --git a/tags.py b/tags.py
+index b3e6761..db41676 100644
+--- a/tags.py
++++ b/tags.py
+@@ -1,4 +1,4 @@
+ def primary_tag(tags: list[str] | None) -> str | None:
+-    if not tags:
++    if tags is None:
+         return None
+     return tags[0].strip().lower()

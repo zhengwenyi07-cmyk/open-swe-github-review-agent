@@ -1,0 +1,39 @@
+{
+  "version": "phase2_scoring_v1",
+  "tasks": [
+    {
+      "fixture_id": "phase1_logic_error_v1",
+      "file": "calculator.py",
+      "line": 2,
+      "category": "correctness",
+      "severity": "high",
+      "semantic_evidence_all_of_any": [
+        ["denominator"],
+        ["zero division", "zerodivisionerror", "divide by zero", "division-by-zero"]
+      ]
+    },
+    {
+      "fixture_id": "phase2_boundary_error_v1",
+      "file": "tags.py",
+      "line": 2,
+      "category": "correctness",
+      "severity": "medium",
+      "semantic_evidence_all_of_any": [
+        ["empty list", "empty input", "empty tags", "zero-length"],
+        ["indexerror", "out of range", "index 0", "tags[0]"]
+      ]
+    },
+    {
+      "fixture_id": "phase2_permission_error_v1",
+      "file": "permissions.py",
+      "line": 2,
+      "category": "security",
+      "severity": "high",
+      "semantic_evidence_all_of_any": [
+        ["viewer"],
+        ["delete"],
+        ["permission", "authorized", "unauthorized", "privilege", "access control"]
+      ]
+    }
+  ]
+}

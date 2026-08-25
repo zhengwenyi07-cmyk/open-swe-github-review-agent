@@ -1,0 +1,8 @@
+diff --git a/permissions.py b/permissions.py
+index 4973b28..df87dc3 100644
+--- a/permissions.py
++++ b/permissions.py
+@@ -1,2 +1,2 @@
+ def can_delete_project(role: str) -> bool:
+-    return role == "admin"
++    return role in {"admin", "viewer"}

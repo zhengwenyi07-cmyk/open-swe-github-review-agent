@@ -1,0 +1,21 @@
+{
+  "fixture_id": "phase2_boundary_error_v1",
+  "repository": "local/phase2-boundary-review-fixture",
+  "base_commit": "5b42849b9736101052b8af238fcf0685bd16de78",
+  "candidate_commit": "7edbe8d7f64224cbdf0a17955220f0f806c30d8f",
+  "diff_sha256": "b31e202be023af4e685579891d453a5be60e1c94174b8f2ef922f9ce711dda8a",
+  "test_commands": [
+    "python -m unittest test_tags.py"
+  ],
+  "expected_primary_finding": {
+    "file": "tags.py",
+    "line": 2,
+    "category": "correctness",
+    "severity": "medium"
+  },
+  "allowed_secondary_findings": [],
+  "prohibited_false_findings": [
+    "None input is no longer handled",
+    "tag normalization was removed"
+  ]
+}

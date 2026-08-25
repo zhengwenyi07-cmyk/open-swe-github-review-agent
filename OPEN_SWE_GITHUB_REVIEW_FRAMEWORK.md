@@ -6,7 +6,7 @@
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：设计并复审 Phase 2 三题 Diff Review Smoke 计划。
+> 当前唯一下一步：复审并提交 Phase 2 离线实现，再由人工批准一次付费三题 Smoke。
 
 ## 1. 为什么建立这个项目
 

@@ -20,7 +20,7 @@ Phase 0 与 Phase 1 已完成：
 
 Phase 1 使用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，并非官方完整 Pregel graph。尚未创建 GitHub App、写入 GitHub、运行本地 4B、训练或运行 Docker。
 
-当前唯一下一步是：设计并复审 Phase 2 的三题 Diff Review Smoke 计划；计划获批前不自动运行。
+Phase 2 的三题 Fixture、串行 Runner、评分器和严重度校准指标已完成离线实现，真实 MiMo 三题尚未运行。当前唯一下一步是主对话复审并提交实现；工作区干净且获得明确批准后，才执行一次付费三题 Smoke。
 
 ## 文档导航
 

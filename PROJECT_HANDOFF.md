@@ -12,6 +12,9 @@ phase_1_real_local_review=COMPLETED
 phase_1_plan_documents=READY
 paid_api_called=true
 phase_1_core_bug_recall=1/1
+phase_2_plan_documents=READY
+phase_2_offline_implementation=IMPLEMENTED_NOT_RUN
+phase_2_three_task_smoke=NOT_RUN
 official_reviewer_graph_executed=false
 github_app_created=false
 github_write_performed=false
@@ -20,7 +23,7 @@ training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=PHASE_2_THREE_TASK_SMOKE_PLAN
+next_step=MAIN_REVIEW_COMMIT_THEN_PHASE_2_PAID_SMOKE
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -74,7 +77,7 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 
 ## 5. 已验证事实
 
-- 13 项 unittest 通过。
+- 39 项 unittest 通过，其中 Phase 2 专项 `15/15`。
 - JSON Schema Draft 2020-12 合法。
 - `pip check` 通过。
 - Fixture Base/Candidate/Diff Hash 可重复。
@@ -82,13 +85,17 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - MiMo Preflight 与 Phase 1 真实 Review 均为 `PASS`。
 - 核心缺陷召回 `1/1`，Finding 准确锚定 `calculator.py:2`，虚假 Finding 为 `0`。
 - Phase 1 使用 Reviewer-compatible local slice；官方完整 Pregel graph 尚未运行。
+- Phase 2 的逻辑、边界和权限三道 Fixture 已冻结，三个 Candidate 固定测试均真实返回 `1`。
+- Phase 2 串行 Runner、评分汇总和严重度校准指标已完成离线实现，真实三题尚未调用 MiMo。
+- Phase 2 的核心召回先经冻结语义 rubric 筛选，最终指标由主对话人工确认；单题失败会保存脱敏证据并继续，且不存在自动进入下一阶段的门槛。
+- Phase 2 失败证据区分六个固定执行阶段及模型响应子原因；Scoring Rubric 与 Fixture 预期身份会交叉验证。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
 - 新仓库已完成首次提交并推送，`main` 正在跟踪 `origin/main`。
 
 ## 6. 当前分支对话任务
 
-Phase 1 已完成真实付费 Preflight 和固定 Diff Review。下一步只允许创建并复审 Phase 2 三题 Smoke 的 `PLAN.md`、`CONCEPTS.md` 和 `RESULTS.md` 模板；不得在计划获批前自动运行三题、创建 GitHub App、发布评论、运行本地 4B 或训练。
+Phase 2 三题 Smoke 的文档、Fixture、串行 Runner、评分器和离线测试已经实现，但尚未提交或调用 MiMo。下一步由主审核对话复审这些改动；复审通过后提交并确认工作区干净，再由用户明确批准一次付费三题串行运行。不得自动进入 GitHub 接入、发布评论、运行本地 4B 或训练。
 
 ## 7. 分支对话回报格式
 
@@ -124,7 +131,7 @@ Git状态：
 - 修改新仓库；
 - 读取固定官方源码；
 - 运行离线测试；
-- 经人工批准调用一次 MiMo 预检和一次固定 Diff Review；
+- 经主审核对话批准后，串行调用一次 Phase 2 三题 Smoke；
 - 保存本地 JSON/Markdown 和必要日志。
 
 禁止：

@@ -1,0 +1,21 @@
+{
+  "fixture_id": "phase2_permission_error_v1",
+  "repository": "local/phase2-permission-review-fixture",
+  "base_commit": "bf0baf8188625d8d4ebc7483fd695c87608dd705",
+  "candidate_commit": "f2b5ba53cde514e580e9170fa84230da713b61fa",
+  "diff_sha256": "bd0f1885c3289f54c467bfbdb662b25d21139eab151ed5773421b953e4341308",
+  "test_commands": [
+    "python -m unittest test_permissions.py"
+  ],
+  "expected_primary_finding": {
+    "file": "permissions.py",
+    "line": 2,
+    "category": "security",
+    "severity": "high"
+  },
+  "allowed_secondary_findings": [],
+  "prohibited_false_findings": [
+    "admin users lost delete permission",
+    "the function no longer returns a boolean"
+  ]
+}
