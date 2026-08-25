@@ -1,0 +1,26 @@
+# Local Code Review
+
+- Commit: `7edbe8d7f64224cbdf0a17955220f0f806c30d8f`
+- Decision: `REQUEST_CHANGES`
+- Tests passed: `false`
+
+## Summary
+
+The change narrows the guard from `if not tags` to `if tags is None`, which removes protection against empty lists. When `tags=[]`, the function will now reach `tags[0]` and raise an `IndexError` instead of returning `None`.
+
+## Findings
+
+### 1. HIGH — correctness
+
+- Location: `tags.py:2`
+- Assessment: `confirmed`
+- Evidence: The old guard `if not tags` covers both `None` and `[]` (both falsy). The replacement `if tags is None` only covers `None`. The function signature accepts `list[str] | None`, so an empty list is a valid input. When `tags=[]`, execution falls through to `tags[0].strip().lower()` on line 3, which raises `IndexError: list index out of range`.
+- Recommendation: Keep the original guard `if not tags` to handle both `None` and empty lists, or explicitly check both: `if tags is None or len(tags) == 0`.
+
+## Uncertainties
+
+None recorded.
+
+## Test Commands
+
+- `python -m unittest test_tags.py`

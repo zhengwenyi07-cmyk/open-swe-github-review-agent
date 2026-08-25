@@ -1,0 +1,79 @@
+{
+  "adapter_kind": "OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE",
+  "automatic_retries": 0,
+  "configured_model": "mimo-v2.5-pro",
+  "contract_commit": "25bee229ebfbc24af6b1a63176d073bdc8f698ae",
+  "cost": null,
+  "elapsed_seconds": 26.115,
+  "failed_reviews": 1,
+  "github_api_called": false,
+  "github_write_performed": false,
+  "human_evaluation": {
+    "core_bug_recall": null,
+    "finding_precision": null,
+    "severity_calibration_accepted": null,
+    "status": "PENDING_HUMAN_REVIEW"
+  },
+  "input_tokens": 3155,
+  "model_calls": 3,
+  "next_step": "HUMAN_REVIEW_REQUIRED",
+  "output_tokens": 1473,
+  "phase": "PHASE_2_THREE_TASK_SMOKE",
+  "quality": {
+    "duplicate_findings": 0,
+    "false_findings": 0,
+    "file_anchor_accuracy": 1.0,
+    "line_anchor_accuracy": 1.0,
+    "semantic_rubric_precision": {
+      "correct": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "semantic_rubric_recall": {
+      "found": 2,
+      "rate": 0.6666666666666666,
+      "total": 3
+    },
+    "severity_calibration": {
+      "exact_match_rate": 0.0,
+      "exact_matches": 0,
+      "matched_findings": 2,
+      "mean_absolute_error": 1.0,
+      "mean_overestimation_magnitude": 1.0,
+      "mean_underestimation_magnitude": null,
+      "overestimation_count": 2,
+      "underestimation_count": 0
+    },
+    "task_count": 3,
+    "tasks": [
+      {
+        "decision": "REQUEST_CHANGES",
+        "duplicate_findings": 0,
+        "expected_severity": "medium",
+        "false_findings": 0,
+        "finding_count": 1,
+        "fixture_id": "phase2_boundary_error_v1",
+        "predicted_severity": "high",
+        "semantic_rubric_match": true
+      },
+      {
+        "decision": "REQUEST_CHANGES",
+        "duplicate_findings": 0,
+        "expected_severity": "high",
+        "false_findings": 0,
+        "finding_count": 1,
+        "fixture_id": "phase2_permission_error_v1",
+        "predicted_severity": "critical",
+        "semantic_rubric_match": true
+      }
+    ],
+    "uncertainty_count": 0
+  },
+  "schema_valid_rate": 0.6666666666666666,
+  "status": "COMPLETED_WITH_FAILURES",
+  "successful_reviews": 2,
+  "test_execution_rate": 0.6666666666666666,
+  "test_split_status": "NOT_APPLICABLE",
+  "total_tokens": 4628,
+  "upstream_commit": "daab5de0baf2d8b16a7e2ae3fadbcb632bace8cc"
+}

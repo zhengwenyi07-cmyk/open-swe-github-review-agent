@@ -1,10 +1,10 @@
 # Open SWE GitHub Review Agent：面试讲述指南（持续更新）
 
-> 当前为 Phase 1 版本。三题 Smoke 和 GitHub 结果出现后必须继续更新数字与结论。本文不允许把计划写成成果。
+> 当前为 Phase 2 版本。GitHub 只读结果出现后必须继续更新数字与结论。本文不允许把计划写成成果。
 
 ## 1. 30 秒项目介绍
 
-我在做一个基于官方 Open SWE Reviewer 约束的 GitHub Diff Review Agent。它读取固定 Diff，只在真实改动行上生成结构化 Finding，运行真实检查，并输出 JSON 和 Markdown。Phase 1 中，MiMo V2.5 Pro 一次调用正确定位了 `calculator.py:2` 的逻辑回归，核心缺陷召回 `1/1`、误报 `0`。当前实现是 Reviewer-compatible 本地切片，下一步用三题 Smoke 验证泛化，再决定是否接 GitHub。
+我在做一个基于官方 Open SWE Reviewer 约束的 GitHub Diff Review Agent。它读取固定 Diff，只在真实改动行上生成结构化 Finding，运行真实检查，并输出 JSON 和 Markdown。Phase 1 单题召回 `1/1`；Phase 2 三类 Diff 的人工核心缺陷召回为 `2/3`、Finding precision 为 `2/2`，没有误报或重复评论。一次结构化输出合同失败被安全拒绝，三个可观察正确 Finding 均高估一级。当前实现是 Reviewer-compatible 本地切片，下一步是 GitHub 只读接入计划。
 
 ## 2. 两分钟讲述框架
 
@@ -22,11 +22,11 @@ Code Review Agent 不只是让模型读代码。它必须绑定精确 Diff、限
 
 ### 当前结果
 
-Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。模型准确指出零分母保护被误改，Finding 文件和行号准确、误报为零，测试返回码与回归一致。Review 使用 1,484 Tokens、耗时 10.484 秒。严重度从预期 `high` 评为 `critical`，说明校准仍需观察；完整官方 graph 和 GitHub 集成尚未完成。
+Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。Phase 2 又在逻辑、边界和权限三类 Diff 上各执行一次：边界与权限问题准确命中且无误报，逻辑题因 Review 合同失败而失败关闭。Phase 2 人工核心缺陷召回 `2/3`、Finding precision `2/2`；3 次调用共使用 4,628 Tokens。Phase 1 和 Phase 2 的三个可观察正确 Finding 都高估一级，说明严重度校准需要继续观察；完整官方 graph 和 GitHub 集成尚未完成。
 
 ### 下一步
 
-三题 Smoke 的离线实现已经完成，下一步在主对话复审并提交后，用逻辑错误、边界处理和危险修改各运行一次真实 Review，再决定是否进入 GitHub 只读接入。
+Phase 2 已冻结且不补跑。下一步只创建和复审 Phase 3 GitHub 只读接入计划；在计划获批前不调用 GitHub API，也不开放写权限。
 
 ## 3. STAR 版本（当前草稿）
 
@@ -51,7 +51,7 @@ Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。模型准确指�
 
 ### Result
 
-Phase 1 的真实结果是：MiMo V2.5 Pro 在一次模型调用中正确定位 `calculator.py:2` 的逻辑回归，核心缺陷召回 `1/1`、虚假 Finding `0`、重复 Finding `0`，生成 Schema 合法的 JSON 和一致的 Markdown；测试真实返回 `1`。模型严重度偏高一级，且当前只是一道 Fixture 和 Reviewer-compatible local slice，因此不能声称已经验证泛化或完成官方 graph/GitHub 集成。
+Phase 1 的真实结果是 MiMo 正确定位单题逻辑回归。Phase 2 扩展到三类 Diff 后，两个 Review 准确且无误报，一个因合同失败被安全拒绝，人工核心召回 `2/3`、precision `2/2`。这说明最小切片具备一定跨类别能力和失败关闭能力，但还不能证明广泛泛化；三个可观察正确 Finding 都高估一级，且当前仍未完成官方 graph 或 GitHub 集成。
 
 ## 4. 关键设计问题与回答
 
@@ -112,7 +112,7 @@ GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSO
 |---|---|---|---|
 | Phase 0 | Fake Model + 固定 Diff | 13 项离线测试通过，JSON/Markdown 可生成 | 完成 |
 | Phase 1 | MiMo + 固定 Diff | 核心缺陷召回 1/1，误报 0；严重度偏高一级 | 完成 |
-| Phase 2 | MiMo + 3 题 Smoke | 待运行 | 未开始 |
+| Phase 2 | MiMo + 3 题 Smoke | 人工召回 2/3、precision 2/2、误报 0；1 次合同失败，严重度均高估一级 | 完成 |
 | Phase 3 | 受控 GitHub PR，只读 | 待运行 | 未开始 |
 | Phase 4 | 受控 GitHub PR，最小写入 | 待运行 | 未开始 |
 | Phase 5 | 本地模型对照 | 根据前序结果决定 | 可选 |

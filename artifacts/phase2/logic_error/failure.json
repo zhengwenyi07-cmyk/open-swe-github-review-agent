@@ -1,0 +1,15 @@
+{
+  "contract_commit": "25bee229ebfbc24af6b1a63176d073bdc8f698ae",
+  "failure_reason": "REVIEW_CONTRACT_FAILURE",
+  "failure_stage": "REVIEW_VALIDATION",
+  "fixture_id": "phase1_logic_error_v1",
+  "github_api_called": false,
+  "github_write_performed": false,
+  "input_tokens": 1058,
+  "model": "mimo-v2.5-pro",
+  "model_calls": 1,
+  "output_tokens": 490,
+  "status": "FAILED",
+  "task_id": "logic_error",
+  "total_tokens": 1548
+}

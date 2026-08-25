@@ -1,0 +1,20 @@
+{
+  "adapter_kind": "OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE",
+  "contract_commit": "25bee229ebfbc24af6b1a63176d073bdc8f698ae",
+  "elapsed_seconds": 12.315,
+  "finish_reason": "tool_calls",
+  "fixture_id": "phase2_permission_error_v1",
+  "github_api_called": false,
+  "github_write_performed": false,
+  "input_tokens": 1042,
+  "model": "mimo-v2.5-pro",
+  "model_calls": 1,
+  "output_tokens": 428,
+  "response_model": "mimo-v2.5-pro",
+  "schema_valid": true,
+  "status": "PASS",
+  "task_id": "permission_error",
+  "test_returncode": 1,
+  "total_tokens": 1470,
+  "upstream_commit": "daab5de0baf2d8b16a7e2ae3fadbcb632bace8cc"
+}

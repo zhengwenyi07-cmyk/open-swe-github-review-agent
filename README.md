@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-Phase 0 与 Phase 1 已完成：
+Phase 0、Phase 1 与 Phase 2 已完成：
 
 - 固定 Open SWE 官方上游 Commit；
 - 建立独立 Python 3.12 环境；
@@ -20,7 +20,7 @@ Phase 0 与 Phase 1 已完成：
 
 Phase 1 使用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，并非官方完整 Pregel graph。尚未创建 GitHub App、写入 GitHub、运行本地 4B、训练或运行 Docker。
 
-Phase 2 的三题 Fixture、串行 Runner、评分器和严重度校准指标已完成离线实现，真实 MiMo 三题尚未运行。当前唯一下一步是主对话复审并提交实现；工作区干净且获得明确批准后，才执行一次付费三题 Smoke。
+Phase 2 已完成一次性 MiMo 三题 Smoke：两题生成合同合法且语义准确的 Review，人工核心缺陷召回 `2/3`、Finding precision `2/2`，虚假和重复 Finding 均为 `0`；逻辑题因 Review 合同失败而按漏报计。两个有效 Finding 均高估一级，结合 Phase 1 显示小样本中的一致严重度上偏。Phase 2 不补跑，且没有调用或写入 GitHub。当前唯一下一步是创建并复审 Phase 3 GitHub 只读计划。
 
 ## 文档导航
 

@@ -177,12 +177,20 @@ OK
 
 该结果证明本地最薄 Review 闭环可工作，但单题成功不能推导出泛化能力。下一步用三类小型 Diff 做 Smoke，而不是直接开放 GitHub 权限。
 
+### Phase 2：三题 Diff Review Smoke
+
+Phase 2 在逻辑错误、空列表边界错误和 viewer 删除权限扩大三类冻结 Diff 上各调用 MiMo 一次。边界题与权限题均生成合同合法、文件和 changed-line 锚定正确的 Review，人工核心缺陷召回为 `2/3`、Finding precision 为 `2/2`，虚假和重复 Finding 均为 `0`。逻辑题的响应在 `REVIEW_VALIDATION` 阶段违反合同，运行器按失败关闭策略只保存脱敏失败证据，因此保守按漏报计且不补跑。
+
+两个有效 Review 的严重度分别从 `medium` 高估为 `high`、从 `high` 高估为 `critical`。连同 Phase 1 的 `high`→`critical`，当前三个可观察正确 Finding 都高估一级；这支持“严重度存在上偏倾向”的小样本结论，但不能夸大为统计规律。
+
+本阶段共调用模型 3 次，使用 3,155 input、1,473 output、4,628 total tokens。没有调用 GitHub API 或进行 GitHub 写入。八份原始产物及 Hash 已冻结，下一步只进入 Phase 3 GitHub 只读计划。
+
 ## 8. 当前未完成和未知问题
 
-1. 单个 Fixture 不能证明泛化能力，三题 Smoke 尚未开始。
+1. 三题 Smoke 显示了跨类别的基本可用性，但样本量仍不足以证明广泛泛化能力。
 2. 官方完整 Reviewer Pregel graph 尚未运行。
 3. GitHub 只读、最小 Review 发布和本地模型对照均未开始。
-4. 严重度校准是否稳定仍未知。
+4. 严重度在三个可观察样本中均高估一级，仍需在后续只读样本中继续观察。
 
 ## 9. 后续结果记录模板
 

@@ -2,11 +2,11 @@
 
 > 文档性质：可调整的研究与实现路线，不是不可变规格。
 >
-> 当前状态：Phase 0 与 Phase 1 已完成；真实 MiMo 本地 Diff Review 核心缺陷召回 `1/1`。
+> 当前状态：Phase 0～2 已完成；Phase 2 人工核心缺陷召回 `2/3`、Finding precision `2/2`。
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：复审并提交 Phase 2 离线实现，再由人工批准一次付费三题 Smoke。
+> 当前唯一下一步：创建并复审 Phase 3 GitHub 只读计划；尚未批准 Phase 3 执行。
 
 ## 1. 为什么建立这个项目
 
@@ -146,7 +146,7 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 
 实际结果：MiMo Preflight 和真实 Review 均通过；模型一次调用生成一个结构化 Review Tool Call，正确指出 `calculator.py:2` 的零分母保护回归，核心缺陷召回 `1/1`，虚假 Finding `0`。测试真实返回 `1`，与已知回归一致。模型严重度为 `critical`，高于预期 `high`，记录为校准偏差。实际链路是 Reviewer-compatible local slice，不是官方完整 Pregel graph。
 
-### Phase 2：三题 Diff Review Smoke（初步）
+### Phase 2：三题 Diff Review Smoke（已完成）
 
 目标：判断原型是否具有基本泛化，而不是只记住一道 fixture。
 
@@ -175,6 +175,8 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 - 若 3 题表现稳定：进入 GitHub 只读接入。
 - 若只有某类任务失败：下一阶段围绕该具体缺口调整 Prompt、工具或上下文，不扩大平台范围。
 - 若官方 Scaffold 成本明显高于价值：在报告中说明，并保留最小切片作为产品原型。
+
+实际结果：三题只运行一次，边界题与权限题均生成准确、无误报的 changed-line Review；逻辑题在 `REVIEW_VALIDATION` 阶段因合同失败而失败关闭。人工核心缺陷召回 `2/3`、Finding precision `2/2`、虚假和重复 Finding 均为 `0`。两个有效 Finding 均高估一级，与 Phase 1 的严重度偏差同向。决定进入 Phase 3 GitHub 只读计划，但不补跑 Phase 2，也不自动执行 Phase 3。
 
 ### Phase 3：GitHub 只读接入（初步）
 
