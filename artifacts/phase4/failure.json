@@ -1,0 +1,11 @@
+{
+  "ambiguous_write_state": false,
+  "automatic_post_retries": 0,
+  "failure_reason": "REMOTE_COMMENTS_MISMATCH",
+  "failure_stage": "REMOTE_VERIFICATION",
+  "github_review_write_requests": 1,
+  "remote_review_html_url": null,
+  "remote_review_id": null,
+  "remote_side_effect_confirmed": false,
+  "status": "FAILED"
+}

@@ -29,21 +29,23 @@ phase_3_review_decision=APPROVE
 phase_3_finding_count=0
 phase_3_uncertainty_count=1
 github_read_performed=true
-phase_4_plan_status=READY
-phase_4_implementation_status=IMPLEMENTED_NOT_RUN
-phase_4_target_status=NOT_APPROVED
-phase_4_prepare_status=NOT_RUN
-phase_4_publish_status=NOT_RUN
+phase_4_plan_status=COMPLETED
+phase_4_implementation_status=COMPLETED
+phase_4_target_status=APPROVED_AND_CONSUMED
+phase_4_prepare_status=PASS
+phase_4_publish_status=COMPLETED_WITH_VERIFICATION_FAILURE
 official_reviewer_graph_executed=false
-github_app_created=false
-github_write_performed=false
+github_app_created=true
+github_write_performed=true
+github_review_write_requests=1
+phase_4_retry_allowed=false
 review_publish_allowed=false
 local_4b_run=false
 training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=MAIN_REVIEW_COMMIT_THEN_CREATE_CONTROLLED_APP_AND_PR
+next_step=HUMAN_PROJECT_REVIEW
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -118,15 +120,19 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - 该 PR 没有冻结人工 Gold Finding，不能声称召回率或 Finding precision；只读模式未执行 PR 测试，`APPROVE` 不是运行时正确性证明。
 - Phase 3 共执行 4 次 GitHub GET，写请求为 0；没有执行 PR 代码、发布 Review 或自动重试。
 - Phase 3 专项离线测试 `25/25`、完整回归 `64` 项通过（另有 1 项既有已消费生命周期跳过）。
-- Phase 4 离线实现已完成：准备动作使用单仓库、`Pull requests: read` installation token，发布动作才请求 `write`；代码唯一仓库内容写路由为一次 Create Review，event 固定为 `COMMENT`。
-- Phase 4 专项测试 `32/32`，完整回归共运行 `96` 项并通过 `95` 项（另有 1 项既有生命周期跳过）；Head 漂移、重复 Marker、Payload/终态篡改、非法 POST JSON 的歧义对账、远端回执保留和凭据脱敏均有离线覆盖。
+- Phase 4 已在所有者控制的 PR #1 上运行：最小权限 GitHub App、目标合同、Prepare 和独立 Payload Hash Gate 均生效；唯一一次 Create Review 使用 `COMMENT`，没有 Issue Comment、Check Run、Merge、Branch 或 Contents 写入。
+- 修复后 Prepare 使用 MiMo 一次生成 1 条可发布评论，Payload SHA256 为 `94ee086...9507a`；批准合同由提交 `d6864a3` 单独冻结。
+- 唯一 Publish POST 已在远端创建 Review `5020924942` 和评论 `3854679061`，之后没有重试。Runner 因 `REMOTE_COMMENTS_MISMATCH` 失败关闭。
+- 人工复核发现真正缺陷位于 `examples/phase4_average.py:8`，但 Payload 和远端评论锚定第 7 行；第 7 行是 `raise ValueError(...)`。因此最终状态为 `COMPLETED_WITH_VERIFICATION_FAILURE`，不能声称 Phase 4 PASS。
+- 原始 `failure.json` 保持不变；远端副作用由独立只读复核写入 `post_publish_audit.json`。Phase 4 不补跑、不补发，也不通过编辑或删除远端内容掩盖结果。
+- Phase 4 专项测试 `33/33`；Head 漂移、重复 Marker、Payload/终态篡改、非法 POST JSON 的歧义对账、远端回执保留和凭据脱敏均有离线覆盖。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
 - 新仓库已完成首次提交并推送，`main` 正在跟踪 `origin/main`。
 
 ## 6. 当前分支对话任务
 
-Phase 2 与 Phase 3 都已完成一次性运行、人工复核和证据冻结，不允许补跑。Phase 4 离线合同和 Fake 测试已经由分支实现，下一步是主对话代码复审与提交。复审通过后仍需先由用户创建单仓库 GitHub App 和受控测试 PR，再单独批准目标合同；准备结果产生后还要第二次人工批准精确 Payload Hash。上述两个批准缺一不可，不得发布评论、运行本地 4B 或训练。
+Phase 2、Phase 3 和 Phase 4 都已完成一次性运行并进入证据冻结。Phase 4 的远端 Review 已创建，但发布后验证失败且人工确认行号锚点错误；不允许再次 POST、补发、编辑或删除来改变实验结果。当前只允许复审和冻结 Phase 4 证据、更新项目结论，再由主对话决定是否结束项目；不得自动进入 Phase 5。
 
 ## 7. 分支对话回报格式
 
@@ -168,13 +174,13 @@ Git状态：
 禁止：
 
 - 修改旧项目；
-- GitHub 写入；
+- 再次进行 GitHub Review 写入；
 - 自动代码修改；
 - 本地 4B 或训练；
 - Docker 长任务；
 - 自动重试正常模型失败；
 - 为失败建立通用审计器或 r01/r02/r03 链；
-- 擅自进入下一阶段。
+- 擅自进入 Phase 5。
 
 ## 9. 常用离线命令
 

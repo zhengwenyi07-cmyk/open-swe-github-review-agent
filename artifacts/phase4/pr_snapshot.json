@@ -1,0 +1,26 @@
+{
+  "base_sha": "9fe5f09914d62a1dc6d8966e800b5eb43c573fe0",
+  "body": "Controlled public test PR for Phase 4 GitHub Review publishing.\\n\\nScope: one small Python function with an intentionally reviewable arithmetic defect. Do not merge; this PR exists only for the approved Phase 4 experiment.",
+  "candidate_changed_lines": 8,
+  "changed_files": 1,
+  "changed_lines_sha256": "f3cbade221f580e8134284034061fb1e974c46cc378072ce0709ca7bcd275a41",
+  "diff_sha256": "fbd3e235940bf558bb4d701ed928ad09357ae7d8c73dc3f988bfa3a6c7a49502",
+  "files": [
+    {
+      "additions": 8,
+      "changes": 8,
+      "deletions": 0,
+      "filename": "examples/phase4_average.py",
+      "patch_sha256": "8220e3ee466972cbda3071478affe03bc0aa46605a313d3554f3a32851f20e92",
+      "status": "added"
+    }
+  ],
+  "files_sha256": "b8437f7c17cf58d2057bfd6edafc062133b0f5e2223b82770b4556673a1fa70f",
+  "head_sha": "df96cd3e49b65e09ec1891cc419e0753e0583958",
+  "metadata_sha256": "f0cfe25dec123bcacc714b4d847e4d190d9c7f34a33794523c1ae26aaf97aa4b",
+  "pull_number": 1,
+  "raw_diff_bytes": 484,
+  "repository": "zhengwenyi07-cmyk/open-swe-github-review-agent",
+  "state": "open",
+  "title": "test: controlled Phase 4 review fixture"
+}

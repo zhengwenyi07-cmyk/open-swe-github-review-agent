@@ -1,10 +1,10 @@
 # Open SWE GitHub Review Agent：面试讲述指南（持续更新）
 
-> 当前为 Phase 3 真实 GitHub 只读结果版本。本文明确区分静态 Review、人工 Gold 和实际测试，不把一次 `APPROVE` 夸大为运行时正确性或准确率证明。
+> 当前为 Phase 4 真实受控写入结果版本。本文明确区分远端副作用、合同终态和人工语义复核，不把“GitHub 创建了 Review”夸大为“发布链路成功”。
 
 ## 1. 30 秒项目介绍
 
-我在做一个基于官方 Open SWE Reviewer 约束的 GitHub Diff Review Agent。它读取 Diff，只在真实改动行上生成结构化 Finding，并输出 JSON 和 Markdown。Phase 1 单题召回 `1/1`；Phase 2 三类 Diff 的人工核心缺陷召回为 `2/3`、Finding precision 为 `2/2`，没有误报或重复评论。Phase 3 又在公开 PR `pallets/click#3021` 上验证了真实 GitHub 只读输入：Base/Head、3 个文件和 38 个 changed lines 构成一致快照，模型输出 `APPROVE`、0 Finding、1 个正确锚定的 Uncertainty，全程没有 GitHub 写入或 PR 代码执行。
+我在做一个基于官方 Open SWE Reviewer 约束的 GitHub Diff Review Agent。它读取 Diff，只允许在真实改动行上生成结构化 Finding，并输出 JSON 和 Markdown。Phase 1 单题召回 `1/1`；Phase 2 三类 Diff 的人工核心缺陷召回为 `2/3`、Finding precision 为 `2/2`；Phase 3 验证了真实 GitHub PR 的只读快照。Phase 4 用最小权限 GitHub App 和双人工 Gate 发布了一次受控 Review，但发布后发现评论锚错一行，因此系统失败关闭并保留负结果，没有补发。
 
 ## 2. 两分钟讲述框架
 
@@ -22,11 +22,11 @@ Code Review Agent 不只是让模型读代码。它必须绑定精确 Diff、限
 
 ### 当前结果
 
-Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。Phase 2 又在逻辑、边界和权限三类 Diff 上各执行一次：边界与权限问题准确命中且无误报，逻辑题因 Review 合同失败而失败关闭。Phase 2 人工核心缺陷召回 `2/3`、Finding precision `2/2`；3 次调用共使用 4,628 Tokens。Phase 3 在真实公开 PR 上用 4 次 GET 建立稳定快照，再调用 MiMo 一次生成合同合法的本地 Review。该 PR 没有 Gold Finding，且没有运行测试，因此 Phase 3 不报告 recall/precision，也不把 `APPROVE` 当作运行时证明。完整官方 graph 和 GitHub 写入仍未完成。
+Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。Phase 2 又在逻辑、边界和权限三类 Diff 上各执行一次：边界与权限问题准确命中且无误报，逻辑题因 Review 合同失败而失败关闭。Phase 2 人工核心缺陷召回 `2/3`、Finding precision `2/2`；3 次调用共使用 4,628 Tokens。Phase 3 在真实公开 PR 上用 4 次 GET 建立稳定快照，再调用 MiMo 一次生成合同合法的本地 Review。Phase 4 则验证最小权限 App、固定 Payload Hash 和一次性写入：GitHub 确实创建了一个 Review，但评论落在第 7 行，而真正缺陷位于第 8 行，终态因此不能记为成功。这说明 changed-line 门禁仍缺少 Evidence 与具体代码行的语义一致性检查。
 
 ### 下一步
 
-Phase 2 与 Phase 3 均已冻结且不补跑。Phase 4 受控写入离线合同与 Fake 测试已完成，但 GitHub App、测试 PR 和真实发布均未开始。下一步是主对话复审提交；GitHub 写权限仍未开放。
+Phase 2、Phase 3 和 Phase 4 均已冻结且不补跑。Phase 4 的远端副作用和失败结果都如实保留；下一步是人工项目复盘，不自动进入 Phase 5。
 
 ## 3. STAR 版本（当前草稿）
 
@@ -51,7 +51,7 @@ Phase 2 与 Phase 3 均已冻结且不补跑。Phase 4 受控写入离线合同�
 
 ### Result
 
-Phase 1 的真实结果是 MiMo 正确定位单题逻辑回归。Phase 2 扩展到三类 Diff 后，两个 Review 准确且无误报，一个因合同失败被安全拒绝，人工核心召回 `2/3`、precision `2/2`。Phase 3 进一步证明真实 GitHub PR 可以安全替代本地 Fixture：`pallets/click#3021` 的快照身份和 changed lines 闭环通过，模型输出 `APPROVE`、0 Finding、1 Uncertainty，GitHub 写请求为 0。这说明最小切片具备跨输入源能力和失败关闭能力，但样本仍小、没有运行 PR 测试，也未运行官方完整 graph。
+Phase 1 的真实结果是 MiMo 正确定位单题逻辑回归。Phase 2 扩展到三类 Diff 后，两个 Review 准确且无误报，一个因合同失败被安全拒绝，人工核心召回 `2/3`、precision `2/2`。Phase 3 进一步证明真实 GitHub PR 可以安全替代本地 Fixture：`pallets/click#3021` 的快照身份和 changed lines 闭环通过，模型输出 `APPROVE`、0 Finding、1 Uncertainty，GitHub 写请求为 0。Phase 4 在受控 PR 上执行一次真实 `COMMENT` 写入；权限和幂等边界有效，但终态回读失败，人工还发现模型把第 8 行缺陷锚到第 7 行。项目由此得到一个重要负结果：结构合法和 changed-line 合法不等于语义锚点正确。
 
 ## 4. 关键设计问题与回答
 
@@ -67,9 +67,9 @@ Schema 适合验证字段、类型、枚举和未知字段；“Finding 必须�
 
 强模型先验证链路，可以降低归因混淆。如果强模型也无法完成最小 Review，优先检查 Scaffold 或适配；链路稳定后再运行本地模型，才能更可信地讨论能力差异。
 
-### 为什么不马上创建 GitHub App？
+### 为什么直到 Phase 4 才创建 GitHub App？
 
-GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSON/Markdown 先验证 Review 质量，把模型问题和平台集成问题拆开。读取权限和写入权限也分两个阶段开放。
+GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSON/Markdown 与真实只读 PR 先验证 Review 链路，再用所有者控制的 PR、单仓库 App 和两个独立人工 Gate 开放一次写入。实际负结果也说明这个顺序有价值：远端写入发生后仍能准确区分平台字段不兼容和模型行号错误。
 
 ### 为什么 Fake workflow 有价值？
 
@@ -101,7 +101,7 @@ GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSO
 
 在对应阶段完成前，不要说：
 
-- 已经部署 GitHub App；
+- Phase 4 已成功完成发布闭环；
 - 已在真实 PR 上达到某个 precision/recall；
 - 已经运行本地 4B 跨框架对照；
 - 官方 Open SWE 完整 graph 已在本地稳定运行；
@@ -115,7 +115,7 @@ GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSO
 | Phase 1 | MiMo + 固定 Diff | 核心缺陷召回 1/1，误报 0；严重度偏高一级 | 完成 |
 | Phase 2 | MiMo + 3 题 Smoke | 人工召回 2/3、precision 2/2、误报 0；1 次合同失败，严重度均高估一级 | 完成 |
 | Phase 3 | MiMo + `pallets/click#3021`，只读 | 快照闭环通过；APPROVE、0 Finding、1 Uncertainty；4 GET、0 写入；未运行测试 | 完成 |
-| Phase 4 | 受控 GitHub PR，最小权限 App + 人工批准 Payload | 离线实现完成；未运行 | 离线合同阶段 |
+| Phase 4 | 受控 GitHub PR，最小权限 App + 人工批准 Payload | 1 次 COMMENT 写入；远端 Review 已创建，但验证失败且锚错一行；无重试 | 完成，含负结果 |
 | Phase 5 | 本地模型对照 | 根据前序结果决定 | 可选 |
 
 ## 9. 项目完成后应补充的面试材料

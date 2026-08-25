@@ -1,8 +1,8 @@
 # Phase 4 讲解：最小权限 GitHub Review 发布
 
-> 当前状态：`OFFLINE_IMPLEMENTATION_COMPLETE_NOT_RUN`
+> 当前状态：`EXECUTED_ONCE_COMPLETED_WITH_VERIFICATION_FAILURE`
 >
-> 本文解释已经落地的离线合同。GitHub App 与目标 PR 尚未创建或批准，真实准备和发布结果仍不存在；不得把 Fake 合同测试写成已经完成 GitHub 发布。
+> 本文主要解释执行前设计。真实运行创建了远端 Review，但发布后验证失败且人工确认评论锚错一行；完整事实与证据边界见 `RESULTS.md`。
 
 ## 1. 为什么不是直接给 Phase 3 加一个 POST
 
@@ -37,6 +37,8 @@ side=RIGHT
 ```
 
 项目现有 changed-line parser 已输出 candidate-side 文件行号，因此第一版只发布 `RIGHT` 侧单行评论，避免引入 deleted-line、multi-line 和跨 hunk 映射。
+
+真实结果补充：Create Review 接受了 `line/side` Payload，但随后 `List review comments` 返回的是 `position/original_position`，没有验证器预期的 `line/side`，导致终态复核失败。人工再将 position 与 Diff 对照时发现，Payload 的第 7 行本身也不对应 Finding 文字描述的第 8 行缺陷。这说明 API 坐标兼容和模型语义锚点是两个独立问题。
 
 ## 5. GitHub App 最小权限的真实含义
 

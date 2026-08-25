@@ -2,11 +2,11 @@
 
 > 文档性质：可调整的研究与实现路线，不是不可变规格。
 >
-> 当前状态：Phase 0～3 已完成；Phase 4 的受控 GitHub Review 最小写入离线合同已实现，尚未运行。
+> 当前状态：Phase 0～3 已完成；Phase 4 已执行一次受控 GitHub Review 写入，最终为 `COMPLETED_WITH_VERIFICATION_FAILURE`。
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：主对话复审并提交 Phase 4 离线实现；没有目标 PR 与 Payload 两次人工批准，不得写入 GitHub。
+> 当前唯一下一步：冻结并人工复核 Phase 4 结果；不得补发 Review，也不得自动进入 Phase 5。
 
 ## 1. 为什么建立这个项目
 
@@ -190,7 +190,7 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 
 实际结果：目标合同单独批准公开 PR `pallets/click#3021` 后，Runner 用 4 次 GET 获取稳定的 Base/Head、3 个文件、4,659 bytes raw diff 和 38 个 candidate changed lines，并验证它们属于同一快照。MiMo 只调用一次，输出合同合法的 `APPROVE`、0 个 Finding、1 个锚定 `src/click/termui.py:122` 的 Uncertainty；没有重试、执行 PR 代码、运行测试或写入 GitHub。该 PR 没有冻结人工 Gold Finding，因此本阶段不报告召回率或 precision；`APPROVE` 也不是运行时正确性证明。六份本地产物经人工复审后原样冻结，当前停在人工决策门，不能自动进入 Phase 4。
 
-### Phase 4：受控 GitHub Review 最小写入（离线实现完成、未运行）
+### Phase 4：受控 GitHub Review 最小写入（已完成，发布后验证失败）
 
 目标：在项目所有者控制的测试 PR 上，把已经本地生成、经人工复核并锁定 SHA256 的 Payload 恰好一次发布为 `COMMENT` 类型 GitHub Review。
 
@@ -198,9 +198,9 @@ Phase 4 固定采用只安装到测试仓库的最小权限 GitHub App。平台�
 
 阶段保持一个整体，但真实运行有两个动作：先完成只读快照、单次 MiMo Review 和确定性 `publish_payload.json`，然后停止；主对话逐字审核并以单独合同绑定 Payload Hash 后，才允许单次发布。发布函数不得再次调用模型。Head 漂移、重复 Marker 或不确定 POST 状态均失败关闭，禁止盲目重试。
 
-详细实施计划、概念和结果模板见 `docs/phases/phase-04-controlled-review-publish/`。当前没有创建 GitHub App 或测试 PR，也没有实现 Publisher 或执行任何 GitHub 写入。
+实际结果：单仓库 GitHub App、目标合同、一次 MiMo Prepare 和独立 Payload Hash Gate 均运行。唯一一次 Create Review POST 在 PR #1 创建了 Review `5020924942` 和一条行内评论；Review body、Marker、Commit 和正文与批准 Payload 一致，没有自动重试或其他仓库写入。
 
-验收结果：受控 PR 上出现一次可验证、无重复的 `COMMENT` Review；Review id、commit id、Marker 和本地 Payload 一致；GitHub App 权限和唯一写 endpoint 可解释；无其他仓库副作用。
+但终态验证返回 `REMOTE_COMMENTS_MISMATCH`。GitHub 评论列表以 `position/original_position` 表示位置，而验证器要求 `line/side`；人工进一步确认 Payload 锚定第 7 行，真正的除数错误位于第 8 行。changed-line 门禁只证明第 7 行属于 Diff，没有证明 Finding 证据描述的语句位于该行。因此验收门槛未全部满足，Phase 4 冻结为 `COMPLETED_WITH_VERIFICATION_FAILURE`，不补跑、不补发，也不自动进入 Phase 5。详细证据见 `docs/phases/phase-04-controlled-review-publish/RESULTS.md`。
 
 ### Phase 5：跨模型对照（可选，不预先承诺）
 

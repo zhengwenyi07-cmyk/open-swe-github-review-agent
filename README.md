@@ -18,13 +18,13 @@ Phase 0～Phase 3 已完成：
 - MiMo V2.5 Pro 真实 Preflight；
 - 固定逻辑回归 Diff 的真实 Review：核心缺陷召回 `1/1`，Finding 锚定 `calculator.py:2`，虚假 Finding `0`。
 
-Phase 1 使用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，并非官方完整 Pregel graph。尚未创建 GitHub App、写入 GitHub、运行本地 4B、训练或运行 Docker。
+Phase 1 使用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，并非官方完整 Pregel graph。项目没有运行本地 4B、训练或 Docker；GitHub App 和受控写入只在 Phase 4 引入。
 
 Phase 2 已完成一次性 MiMo 三题 Smoke：两题生成合同合法且语义准确的 Review，人工核心缺陷召回 `2/3`、Finding precision `2/2`，虚假和重复 Finding 均为 `0`；逻辑题因 Review 合同失败而按漏报计。两个有效 Finding 均高估一级，结合 Phase 1 显示小样本中的一致严重度上偏。Phase 2 不补跑，且没有调用或写入 GitHub。
 
 Phase 3 GitHub PR 只读接入已在公开 PR `pallets/click#3021` 上完成唯一一次正式运行：受限 GET Client 验证了 Base/Head、3 个 files、4,659 bytes raw diff 与 38 个 changed lines 属于同一稳定快照；MiMo 返回 `APPROVE`、0 个 Finding、1 个锚定到真实 changed line 的 Uncertainty。该 PR 没有冻结人工 Gold Finding，且只读模式没有执行 PR 测试，因此不能据此声称召回率、precision 或运行时正确性。全程只有 4 次 GitHub GET，写请求、Review 发布、PR 代码执行和自动重试均为 0。六份原始产物已冻结。
 
-Phase 4 受控写入的离线合同已实现但尚未运行。它只允许在项目所有者控制的测试 PR 上，用单仓库最小权限 GitHub App 发布一次 `COMMENT` Review；必须先本地生成确定性 Payload，再由主对话审核并锁定 Payload Hash。当前没有 GitHub App、测试 PR 或写入结果。
+Phase 4 已在项目所有者控制的 PR #1 上执行一次受控写入。单仓库 GitHub App、只读 Prepare、独立 Payload Hash Gate 和唯一 `COMMENT` 写路由均真实运行；GitHub 创建了 Review `5020924942`，且没有第二次 POST 或其他仓库副作用。但发布后验证返回 `REMOTE_COMMENTS_MISMATCH`，人工复核发现评论锚定第 7 行，而真正缺陷位于第 8 行。因此 Phase 4 最终为 `COMPLETED_WITH_VERIFICATION_FAILURE`，不是成功发布。原始证据和只读人工审计均已保留，Phase 4 不补跑，也不自动进入 Phase 5。
 
 ## 文档导航
 

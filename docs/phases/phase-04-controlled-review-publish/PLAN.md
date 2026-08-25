@@ -1,8 +1,8 @@
 # Phase 4 计划：受控 GitHub Review 最小写入
 
-> 状态：`OFFLINE_IMPLEMENTATION_COMPLETE_NOT_RUN`
+> 状态：`EXECUTED_ONCE_COMPLETED_WITH_VERIFICATION_FAILURE`
 >
-> 本文已由阶段分支实现。Phase 4 是一个阶段，不拆成 r01/r02/r03。当前完成了离线 GitHub App 认证、只读准备、确定性 Payload、受控 Publisher、状态检查和 Fake 合同测试；没有创建 GitHub App、测试 PR 或运行产物，也没有调用 GitHub/MiMo。
+> 本文保留执行前计划，不按结果倒改目标。真实 GitHub App、目标 PR、Prepare、单次 Publish 和最终负结果见 `RESULTS.md`；Phase 4 不补跑。
 
 ## 1. 阶段背景
 

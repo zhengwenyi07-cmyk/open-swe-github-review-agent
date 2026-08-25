@@ -199,16 +199,20 @@ Phase 3 只替换输入层：从一个主对话批准的 PR 读取 metadata、Ba
 
 1. 三题 Smoke 显示了跨类别的基本可用性，但样本量仍不足以证明广泛泛化能力。
 2. 官方完整 Reviewer Pregel graph 尚未运行。
-3. GitHub 只读已在一个公开 PR 上完成；样本量只有 1。Phase 4 最小写入离线合同已完成，但 GitHub App、测试 PR 和真实发布仍未开始。
+3. GitHub 只读已在一个公开 PR 上完成；样本量只有 1。Phase 4 又在一个所有者控制的 PR 上完成唯一一次真实写入，但发布后验证失败且评论锚错一行。
 4. 严重度在三个可观察样本中均高估一级，仍需在后续只读样本中继续观察。
 
-### Phase 4：受控 GitHub Review 最小写入（离线实现完成）
+### Phase 4：受控 GitHub Review 最小写入（已完成，含负结果）
 
 Phase 4 只增加一个变量：把经人工批准 Hash 的本地 Review Payload 发布到项目所有者控制的测试 PR。离线实现采用只安装到该仓库的 GitHub App，准备动作将 installation token 下压到 Pull requests read，发布动作才请求 read/write；代码层唯一允许的仓库内容写接口是 Create Review。
 
 为防止模型输出直接产生外部副作用，计划把准备与发布分开：准备动作只读 PR、调用 MiMo 一次并生成确定性 `publish_payload.json`；主对话逐字审核并提交 Payload Hash 合同后，发布动作才可执行一个 `event=COMMENT` 的 POST，且不得再次调用模型。Head 漂移、重复 Marker 或模糊写入状态均停止，不自动重试。
 
-当前这些都是设计，不是结果。不能声称 GitHub App 已部署、Review 已发布或幂等机制已经验证。
+真实运行中，Prepare 调用 MiMo 一次，生成一条绑定固定 Head SHA 的 `COMMENT` Payload；主对话逐字审核后用独立提交冻结 Payload SHA256。Publish 只发出一次 Create Review POST，远端创建 Review `5020924942`，没有自动重试、Issue Comment、Check Run、Merge 或代码写入。
+
+终态没有通过：GitHub 回读评论使用 `position/original_position` 而不是验证器期待的 `line/side`，触发 `REMOTE_COMMENTS_MISMATCH`。人工将远端 `position=7` 与冻结 Diff 对照后，又发现模型文字所指的 `return sum(...)` 实际位于第 8 行，第 7 行是 `raise ValueError(...)`。这暴露了一个比 API 字段兼容更关键的缺口：changed-line membership 只能防止 Diff 外评论，不能保证自然语言 Evidence 与锚点行的代码语义一致。
+
+因此 Phase 4 的可信结论不是“发布成功”，而是：最小权限认证、双人工 Gate、确定性 Payload 和单次写入路径可达；发布后验证能失败关闭；但行号语义仍不可靠。原始 Runner 失败证据与后续只读人工审计分开保存，本阶段不补跑，也不自动进入 Phase 5。
 
 ## 9. 后续结果记录模板
 
