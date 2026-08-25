@@ -1,6 +1,6 @@
 # Phase 1 计划：真实 MiMo 本地 Diff Review 原型
 
-> 状态：`IMPLEMENTED_READY_FOR_PAID_RUN`
+> 状态：`COMPLETED`
 >
 > 文档性质：实施前计划，可根据实现中的真实发现做最小调整；所有偏差必须写入同目录 `RESULTS.md`。
 >

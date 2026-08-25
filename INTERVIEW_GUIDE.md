@@ -1,10 +1,10 @@
 # Open SWE GitHub Review Agent：面试讲述指南（持续更新）
 
-> 当前为 Phase 0 版本。真实 MiMo、Smoke 和 GitHub 结果出现后必须更新数字与结论。本文不允许把计划写成成果。
+> 当前为 Phase 1 版本。三题 Smoke 和 GitHub 结果出现后必须继续更新数字与结论。本文不允许把计划写成成果。
 
 ## 1. 30 秒项目介绍
 
-我在做一个基于官方 Open SWE Reviewer 的 GitHub Diff Review Agent。它读取固定 Commit 或 PR Diff，只在真实改动行上生成结构化 Finding，运行必要检查，并输出 Review JSON 和 Markdown。项目先用 MiMo 强模型验证框架，再考虑本地 4B 对照；本地只读链路稳定后才开放最小 GitHub App 权限。当前完成了上游固定、Diff 合同、Fake Model/Sandbox 和 MiMo Chat Completions 适配，真实模型 Review 仍是下一步。
+我在做一个基于官方 Open SWE Reviewer 约束的 GitHub Diff Review Agent。它读取固定 Diff，只在真实改动行上生成结构化 Finding，运行真实检查，并输出 JSON 和 Markdown。Phase 1 中，MiMo V2.5 Pro 一次调用正确定位了 `calculator.py:2` 的逻辑回归，核心缺陷召回 `1/1`、误报 `0`。当前实现是 Reviewer-compatible 本地切片，下一步用三题 Smoke 验证泛化，再决定是否接 GitHub。
 
 ## 2. 两分钟讲述框架
 
@@ -22,11 +22,11 @@ Code Review Agent 不只是让模型读代码。它必须绑定精确 Diff、限
 
 ### 当前结果
 
-Phase 0 已完成 13 项离线测试，固定 Git fixture 可确定性重建，Fake workflow 能识别逻辑回归并生成合法 JSON/Markdown。MiMo 的 Chat Completions 适配已完成离线验证，但真实 Open SWE Review 尚未执行，因此目前不声称有模型准确率或 GitHub 集成成果。
+Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。模型准确指出零分母保护被误改，Finding 文件和行号准确、误报为零，测试返回码与回归一致。Review 使用 1,484 Tokens、耗时 10.484 秒。严重度从预期 `high` 评为 `critical`，说明校准仍需观察；完整官方 graph 和 GitHub 集成尚未完成。
 
 ### 下一步
 
-下一步只做一个结果：MiMo 在固定 Diff 上跑通真实 Reviewer 原型。成功后再做三题 Smoke，然后才进入 GitHub 只读和最小写入。
+下一步只设计并复审三题 Smoke，用逻辑错误、边界处理和危险修改验证泛化；计划获批后才运行，再决定是否进入 GitHub 只读接入。
 
 ## 3. STAR 版本（当前草稿）
 
@@ -51,7 +51,7 @@ Phase 0 已完成 13 项离线测试，固定 Git fixture 可确定性重建，F
 
 ### Result
 
-当前可确认结果是：13 项离线测试通过；Fixture Commit 和 Diff Hash 可复现；Fake workflow 能生成合同合法的 JSON 和 Markdown；MiMo 静态适配与依赖检查通过。真实模型 Review 和 GitHub 接入尚未发生，后续结果应继续补入这里。
+Phase 1 的真实结果是：MiMo V2.5 Pro 在一次模型调用中正确定位 `calculator.py:2` 的逻辑回归，核心缺陷召回 `1/1`、虚假 Finding `0`、重复 Finding `0`，生成 Schema 合法的 JSON 和一致的 Markdown；测试真实返回 `1`。模型严重度偏高一级，且当前只是一道 Fixture 和 Reviewer-compatible local slice，因此不能声称已经验证泛化或完成官方 graph/GitHub 集成。
 
 ## 4. 关键设计问题与回答
 
@@ -111,7 +111,7 @@ GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSO
 | 阶段 | 模型/输入 | 核心结果 | 状态 |
 |---|---|---|---|
 | Phase 0 | Fake Model + 固定 Diff | 13 项离线测试通过，JSON/Markdown 可生成 | 完成 |
-| Phase 1 | MiMo + 固定 Diff | 待运行 | 未开始 |
+| Phase 1 | MiMo + 固定 Diff | 核心缺陷召回 1/1，误报 0；严重度偏高一级 | 完成 |
 | Phase 2 | MiMo + 3 题 Smoke | 待运行 | 未开始 |
 | Phase 3 | 受控 GitHub PR，只读 | 待运行 | 未开始 |
 | Phase 4 | 受控 GitHub PR，最小写入 | 待运行 | 未开始 |

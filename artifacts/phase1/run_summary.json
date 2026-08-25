@@ -1,0 +1,18 @@
+{
+  "adapter_kind": "OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE",
+  "contract_commit": "83e4ef7afdfff9153f491ef4d9783080276ad39f",
+  "elapsed_seconds": 10.484,
+  "finish_reason": "tool_calls",
+  "github_api_called": false,
+  "github_write_performed": false,
+  "input_tokens": 1058,
+  "model": "mimo-v2.5-pro",
+  "model_calls": 1,
+  "output_tokens": 426,
+  "response_model": "mimo-v2.5-pro",
+  "schema_valid": true,
+  "status": "PASS",
+  "test_returncode": 1,
+  "total_tokens": 1484,
+  "upstream_commit": "daab5de0baf2d8b16a7e2ae3fadbcb632bace8cc"
+}

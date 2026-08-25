@@ -8,9 +8,10 @@
 project=open-swe-github-review-agent
 repository=/home/zhengwenyi/projects/open-swe-github-review-agent
 phase_0_static_preparation=COMPLETED
-phase_1_real_local_review=IMPLEMENTED_COMMITTED_NOT_RUN
+phase_1_real_local_review=COMPLETED
 phase_1_plan_documents=READY
-paid_api_called=false
+paid_api_called=true
+phase_1_core_bug_recall=1/1
 official_reviewer_graph_executed=false
 github_app_created=false
 github_write_performed=false
@@ -19,7 +20,7 @@ training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=MIMO_PREFLIGHT
+next_step=PHASE_2_THREE_TASK_SMOKE_PLAN
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -78,23 +79,16 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - `pip check` 通过。
 - Fixture Base/Candidate/Diff Hash 可重复。
 - Fake workflow 可生成合同合法 JSON 和 Markdown。
-- MiMo 离线检查为 `network=NOT_RUN`。
+- MiMo Preflight 与 Phase 1 真实 Review 均为 `PASS`。
+- 核心缺陷召回 `1/1`，Finding 准确锚定 `calculator.py:2`，虚假 Finding 为 `0`。
+- Phase 1 使用 Reviewer-compatible local slice；官方完整 Pregel graph 尚未运行。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
 - 新仓库已完成首次提交并推送，`main` 正在跟踪 `origin/main`。
 
 ## 6. 当前分支对话任务
 
-Phase 0 静态基线已经提交并推送。Phase 1 的 `PLAN.md`、`CONCEPTS.md` 和 `RESULTS.md` 模板已经建立；下一步可将 `docs/phases/phase-01-local-diff-review/PLAN.md` 交给新的分支对话，只完成 Phase 1 原型：
-
-1. 运行一次 MiMo Tool Call 预检。
-2. 用最薄适配层把预配置 MiMo model 注入固定 Open SWE Reviewer 路径。
-3. 使用现有固定 Fixture。
-4. 以本地 JSON 和 Markdown 为终点。
-5. 运行一次真实 Review。
-6. 返回真实结果并停止。
-
-分支不得创建 GitHub App、发布评论、运行本地 4B、训练、设计 3 题 Smoke 平台或启动下一阶段。
+Phase 1 已完成真实付费 Preflight 和固定 Diff Review。下一步只允许创建并复审 Phase 2 三题 Smoke 的 `PLAN.md`、`CONCEPTS.md` 和 `RESULTS.md` 模板；不得在计划获批前自动运行三题、创建 GitHub App、发布评论、运行本地 4B 或训练。
 
 ## 7. 分支对话回报格式
 

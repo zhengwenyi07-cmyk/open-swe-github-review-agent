@@ -1,0 +1,13 @@
+{
+  "base_url": "https://api.xiaomimimo.com/v1",
+  "configured_model": "mimo-v2.5-pro",
+  "finish_reason": "tool_calls",
+  "input_tokens": 273,
+  "model": "mimo-v2.5-pro",
+  "output_tokens": 52,
+  "response_model": "mimo-v2.5-pro",
+  "status": "PASS",
+  "tool_calls": 1,
+  "total_tokens": 325,
+  "transport": "OPENAI_CHAT_COMPLETIONS"
+}

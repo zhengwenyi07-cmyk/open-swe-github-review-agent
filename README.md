@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-当前只完成 Phase 0/Phase 1 的静态准备：
+Phase 0 与 Phase 1 已完成：
 
 - 固定 Open SWE 官方上游 Commit；
 - 建立独立 Python 3.12 环境；
@@ -14,11 +14,13 @@
 - 固定一个可重建的本地 Git Diff fixture；
 - Fake Model/Fake Sandbox 离线工作流与测试；
 - MiMo V2.5 Pro Chat Completions 适配入口和一次性付费预检门禁；
-- 本地 JSON/Markdown 示例生成器。
+- 本地 JSON/Markdown 生成器；
+- MiMo V2.5 Pro 真实 Preflight；
+- 固定逻辑回归 Diff 的真实 Review：核心缺陷召回 `1/1`，Finding 锚定 `calculator.py:2`，虚假 Finding `0`。
 
-尚未调用 MiMo、未运行官方 Open SWE Reviewer graph、未创建 GitHub App、未写入 GitHub、未运行本地 4B、未训练、未运行 Docker。
+Phase 1 使用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，并非官方完整 Pregel graph。尚未创建 GitHub App、写入 GitHub、运行本地 4B、训练或运行 Docker。
 
-当前唯一下一步是：把 MiMo V2.5 Pro 接入固定 Open SWE Reviewer 路径，对现有本地 Fixture 运行一次真实只读 Review，并生成 JSON 和 Markdown。
+当前唯一下一步是：设计并复审 Phase 2 的三题 Diff Review Smoke 计划；计划获批前不自动运行。
 
 ## 文档导航
 

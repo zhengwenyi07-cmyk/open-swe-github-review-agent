@@ -2,11 +2,11 @@
 
 > 文档性质：可调整的研究与实现路线，不是不可变规格。
 >
-> 当前状态：Phase 0 静态准备完成，Phase 1 真实本地 Diff Review 尚未运行。
+> 当前状态：Phase 0 与 Phase 1 已完成；真实 MiMo 本地 Diff Review 核心缺陷召回 `1/1`。
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：将 MiMo V2.5 Pro 接入固定 Open SWE Reviewer 路径，在一个固定本地 Diff 上生成真实 Review JSON 和 Markdown。
+> 当前唯一下一步：设计并复审 Phase 2 三题 Diff Review Smoke 计划。
 
 ## 1. 为什么建立这个项目
 
@@ -115,7 +115,7 @@ Sandbox:
 
 Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 MiMo Review 已运行。
 
-### Phase 1：可工作的本地 Diff Review 原型（当前阶段）
+### Phase 1：可工作的本地 Diff Review 原型（已完成）
 
 目标：真实 MiMo + 固定官方 Open SWE Reviewer 路径 + 固定本地 Diff，生成第一份真实 Review JSON 和 Markdown。
 
@@ -143,6 +143,8 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 - 若模型响应结构不兼容：只修 MiMo/Open SWE 适配边界，然后补跑一次。
 - 若官方 graph 的外部依赖过重：保留官方 Reviewer 约束，采用最薄本地 adapter 跑通原型，并清楚记录差异。
 - 若 MiMo 正常运行但漏报/误报：作为模型结果，不创建额外审计阶段。
+
+实际结果：MiMo Preflight 和真实 Review 均通过；模型一次调用生成一个结构化 Review Tool Call，正确指出 `calculator.py:2` 的零分母保护回归，核心缺陷召回 `1/1`，虚假 Finding `0`。测试真实返回 `1`，与已知回归一致。模型严重度为 `critical`，高于预期 `high`，记录为校准偏差。实际链路是 Reviewer-compatible local slice，不是官方完整 Pregel graph。
 
 ### Phase 2：三题 Diff Review Smoke（初步）
 

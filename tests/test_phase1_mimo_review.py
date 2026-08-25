@@ -161,7 +161,7 @@ class Phase1ReviewTests(unittest.TestCase):
         self.assertFalse(result["tests"]["passed"])
         self.assertEqual(result["findings"][0]["line"], 2)
 
-    def test_cli_check_is_offline_and_reports_not_run(self) -> None:
+    def test_cli_check_is_offline_and_validates_frozen_run(self) -> None:
         completed = subprocess.run(
             [str(ROOT / ".venv" / "bin" / "python"), "scripts/run_phase1_mimo_review.py", "--check"],
             cwd=ROOT,
@@ -170,7 +170,8 @@ class Phase1ReviewTests(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        self.assertIn("review=NOT_RUN", completed.stdout)
+        self.assertIn("preflight=PASS", completed.stdout)
+        self.assertIn("review=PASS", completed.stdout)
 
 
 if __name__ == "__main__":

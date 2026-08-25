@@ -1,6 +1,6 @@
 # Phase 1 讲解：从固定 Diff 到真实本地 Review
 
-> 当前状态：离线实现与测试完成，真实 MiMo 调用尚未开始。
+> 当前状态：Phase 1 真实 MiMo Preflight 与固定 Diff Review 已完成。
 >
 > 本文将在分支实现过程中补充实际代码路径。凡标记“计划”的内容都不是已完成结果。
 
@@ -286,7 +286,7 @@ Prompt 中只有 Repository identity、Base/Candidate Commit 和原始 Diff，�
 当前离线输出：
 
 ```text
-VALID phase1-review model=mimo-v2.5-pro preflight=NOT_RUN review=NOT_RUN
+VALID phase1-review model=mimo-v2.5-pro preflight=PASS review=PASS
 ```
 
 ### 12.4 模型身份闭环

@@ -122,7 +122,7 @@ max_tokens=4096
 max_retries=0
 ```
 
-该模块目前只完成离线构造测试，没有发送真实请求。
+该模块已完成离线构造测试，并在 Phase 1 中完成真实 Preflight 与 Review 请求。API 返回模型身份和 finish reason 均经过失败关闭校验。
 
 ## 6. 固定本地 Fixture
 
@@ -159,16 +159,30 @@ Ran 13 tests
 OK
 ```
 
-这说明本地合同和依赖注入设计可运行。它不说明 MiMo 已发现缺陷，也不说明官方 Open SWE Reviewer 已在本地工作。
+这说明本地合同和依赖注入设计可运行。Phase 0 本身不说明 MiMo 已发现缺陷，也不说明官方 Open SWE Reviewer 已在本地工作。
+
+### Phase 1：真实 MiMo 固定 Diff Review
+
+真实运行采用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，而不是官方完整 Pregel graph。MiMo V2.5 Pro 对固定 Fixture 进行一次模型调用，返回一个结构化 Review Tool Call：
+
+- 正确识别 `calculator.py:2` 的零分母保护回归；
+- 核心缺陷召回 `1/1`；
+- 文件和 changed-line 锚定准确；
+- 虚假 Finding `0`，重复 Finding `0`；
+- 决策为 `REQUEST_CHANGES`；
+- 真实测试返回码为 `1`，与回归预期一致；
+- Review 使用 1,484 Tokens，耗时 10.484 秒；
+- 严重度给成 `critical`，高于预期 `high`，说明仍需观察校准；
+- 没有调用 GitHub API，也没有修改代码。
+
+该结果证明本地最薄 Review 闭环可工作，但单题成功不能推导出泛化能力。下一步用三类小型 Diff 做 Smoke，而不是直接开放 GitHub 权限。
 
 ## 8. 当前未完成和未知问题
 
-1. MiMo Tool Call 预检尚未付费执行。
-2. MiMo 尚未对 Fixture 生成真实 Review。
-3. 官方 Reviewer graph 如何以最少依赖接入本地固定仓库仍需实现。
-4. 是否需要保留官方 `publish_review` 工具接口、但将终点替换为本地 sink，仍需通过真实集成确定。
-5. 官方 graph 的 Prompt/工具复杂度是否会影响 MiMo Review 质量尚未知。
-6. 3 题 Smoke、GitHub 只读、最小 Review 发布和本地模型对照均未开始。
+1. 单个 Fixture 不能证明泛化能力，三题 Smoke 尚未开始。
+2. 官方完整 Reviewer Pregel graph 尚未运行。
+3. GitHub 只读、最小 Review 发布和本地模型对照均未开始。
+4. 严重度校准是否稳定仍未知。
 
 ## 9. 后续结果记录模板
 
