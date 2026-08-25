@@ -1,12 +1,12 @@
 {
-  "approval_status": "NOT_APPROVED",
-  "base_sha": null,
+  "approval_status": "APPROVED",
+  "base_sha": "9fe5f09914d62a1dc6d8966e800b5eb43c573fe0",
   "event": "COMMENT",
-  "head_sha": null,
+  "head_sha": "df96cd3e49b65e09ec1891cc419e0753e0583958",
   "max_write_requests": 1,
   "payload_path": "artifacts/phase4/publish_payload.json",
-  "payload_sha256": null,
-  "pull_number": null,
-  "repository": null,
+  "payload_sha256": "94ee086d4d995a558d8fcc67c31e2d80a1d9cd6aecc59099b3697fa9b6a9507a",
+  "pull_number": 1,
+  "repository": "zhengwenyi07-cmyk/open-swe-github-review-agent",
   "version": "phase4_publish_approval_v1"
 }
