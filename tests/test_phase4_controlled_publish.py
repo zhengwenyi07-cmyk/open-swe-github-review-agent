@@ -443,6 +443,31 @@ class Phase4ControlledPublishTests(unittest.TestCase):
         self.assertEqual(payload_a["comments"][0]["side"], "RIGHT")
         self.assertIn(marker_a, payload_a["body"])
 
+    def test_confirmed_findings_on_same_changed_line_merge_deterministically(self) -> None:
+        candidate = review()
+        candidate["findings"].append(
+            {
+                "file": "app.py",
+                "line": 1,
+                "severity": "high",
+                "category": "maintainability",
+                "assessment": "confirmed",
+                "evidence": "The same changed line also bypasses the fallback.",
+                "recommendation": "Preserve the fallback while restoring the value.",
+            }
+        )
+
+        payload_a, marker_a = build_publish_payload(candidate, snapshot(), evidence_commit="a" * 40)
+        payload_b, marker_b = build_publish_payload(candidate, snapshot(), evidence_commit="a" * 40)
+
+        self.assertEqual(payload_a, payload_b)
+        self.assertEqual(marker_a, marker_b)
+        self.assertEqual(len(payload_a["comments"]), 1)
+        self.assertEqual(payload_a["comments"][0]["path"], "app.py")
+        self.assertEqual(payload_a["comments"][0]["line"], 1)
+        self.assertIn("The changed assignment returns the wrong value.", payload_a["comments"][0]["body"])
+        self.assertIn("The same changed line also bypasses the fallback.", payload_a["comments"][0]["body"])
+
     def test_marker_binds_review_hash_without_payload_self_reference(self) -> None:
         first = marker_id(REPOSITORY, 7, HEAD, "a" * 64)
         second = marker_id(REPOSITORY, 7, HEAD, "b" * 64)

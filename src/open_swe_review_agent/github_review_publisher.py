@@ -218,18 +218,25 @@ def build_publish_payload(
     )
     if len(body) > active_limits.max_review_body_chars:
         raise GitHubPublishError("REVIEW_BODY_TOO_LARGE")
-    comments: list[dict[str, Any]] = []
+    comment_sections: dict[tuple[str, int], list[str]] = {}
     for item in confirmed:
-        comment_body = (
+        section = (
             f"**{item['severity']} {item['category']}**\n\n"
             f"{item['evidence']}\n\nRecommendation: {item['recommendation']}"
         )
+        if len(section) > active_limits.max_comment_body_chars:
+            raise GitHubPublishError("COMMENT_BODY_TOO_LARGE")
+        comment_sections.setdefault((item["file"], item["line"]), []).append(section)
+
+    comments: list[dict[str, Any]] = []
+    for (path, line), sections in comment_sections.items():
+        comment_body = "\n\n---\n\n".join(sections)
         if len(comment_body) > active_limits.max_comment_body_chars:
             raise GitHubPublishError("COMMENT_BODY_TOO_LARGE")
         comments.append(
             {
-                "path": item["file"],
-                "line": item["line"],
+                "path": path,
+                "line": line,
                 "side": "RIGHT",
                 "body": comment_body,
             }
