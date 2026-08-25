@@ -6,7 +6,7 @@
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：创建并复审 Phase 3 GitHub 只读计划；尚未批准 Phase 3 执行。
+> 当前唯一下一步：主对话复审并提交 Phase 3 离线实现，再批准精确目标 PR；尚未批准联网执行。
 
 ## 1. 为什么建立这个项目
 
@@ -178,13 +178,15 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 
 实际结果：三题只运行一次，边界题与权限题均生成准确、无误报的 changed-line Review；逻辑题在 `REVIEW_VALIDATION` 阶段因合同失败而失败关闭。人工核心缺陷召回 `2/3`、Finding precision `2/2`、虚假和重复 Finding 均为 `0`。两个有效 Finding 均高估一级，与 Phase 1 的严重度偏差同向。决定进入 Phase 3 GitHub 只读计划，但不补跑 Phase 2，也不自动执行 Phase 3。
 
-### Phase 3：GitHub 只读接入（初步）
+### Phase 3：GitHub 只读接入（离线实现完成，未运行）
 
-目标：对一个受控测试仓库的真实 PR 完成读取与本地 Review，不发布评论。
+目标：对一个主对话批准的真实 PR 完成只读快照与本地 Review，不发布评论。
 
-只申请读取 Repository metadata、Pull Request、Commit/Diff 和 Check Run 状态所需权限。Review 仍写入本地证据。Token、App private key 不进入 Prompt、Sandbox、日志或 Git。
+认证优先使用公开 PR 无 Token 模式；需要认证时只使用目标仓库的细粒度只读 Token。只允许读取 Metadata、Contents 和 Pull Requests，Review 仍写入本地证据。Token 不进入 Prompt、日志、产物或 Git。
 
-验收结果：同一 PR 可重复读取；本地 Review 与固定 Diff 一致；没有 GitHub 写操作。
+计划采用 metadata A → files → raw diff → metadata B 的快照协议，要求 Base/Head SHA 稳定，并交叉验证文件列表、patch、raw diff 和 changed-line 集合。patch 缺失、Diff 超限、二进制或 SHA 漂移均失败关闭，不执行 PR 代码。
+
+验收门槛：成功读取一个批准的 PR 快照；本地 Review Schema 与 changed-line 语义合法；GitHub 写操作为 `0`；凭据扫描和人工复核通过。离线 Client、Runner 和 Fake 测试已经实现并停在联网前，不能自动进入 Phase 4。
 
 ### Phase 4：最小 GitHub Review 写入（初步）
 

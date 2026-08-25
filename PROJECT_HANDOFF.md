@@ -15,19 +15,25 @@ phase_1_core_bug_recall=1/1
 phase_2_plan_documents=READY
 phase_2_offline_implementation=COMPLETED
 phase_2_three_task_smoke=COMPLETED_WITH_FAILURES
+phase_2_status=COMPLETED_WITH_FAILURES
 phase_2_human_core_bug_recall=2/3
 phase_2_human_finding_precision=2/2
 phase_2_retry_allowed=false
 severity_bias=SYSTEMATIC_ONE_LEVEL_OVERESTIMATION_OBSERVED
+phase_3_plan_status=READY
+phase_3_execution_status=IMPLEMENTED_NOT_RUN
+phase_3_target_contract_status=NOT_APPROVED
+github_read_performed=false
 official_reviewer_graph_executed=false
 github_app_created=false
 github_write_performed=false
+review_publish_allowed=false
 local_4b_run=false
 training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=PHASE_3_GITHUB_READ_ONLY_PLAN
+next_step=MAIN_REVIEW_COMMIT_THEN_APPROVE_TARGET_PR
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -95,13 +101,17 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - Phase 1 与 Phase 2 的三个可观察正确 Finding 均高估一个严重度等级；这是小样本观察，不是统计证明。
 - Phase 2 的核心召回先经冻结语义 rubric 筛选，最终指标由主对话人工确认；单题失败会保存脱敏证据并继续，且不存在自动进入下一阶段的门槛。
 - Phase 2 失败证据区分六个固定执行阶段及模型响应子原因；Scoring Rubric 与 Fixture 预期身份会交叉验证。
+- Phase 3 的文档、只读 Client、Runner 和 Fake Client 测试已完成离线实现；尚未读取 GitHub 或调用 MiMo。
+- Phase 3 采用 PR metadata 双读、Base/Head SHA 稳定性、files/raw diff 交叉校验和 changed-line 门禁；patch 缺失或超限时失败关闭。
+- Phase 3 目标合同当前为 `NOT_APPROVED`；CLI repository、PR number 和认证模式必须与批准合同完全一致。
+- Phase 3 专项离线测试 `25/25`、完整回归 `64` 项通过（另有 1 项既有已消费生命周期跳过）。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
 - 新仓库已完成首次提交并推送，`main` 正在跟踪 `origin/main`。
 
 ## 6. 当前分支对话任务
 
-Phase 2 已完成一次性运行、人工复核和证据冻结，不允许补跑。下一步只创建并复审 Phase 3 的 GitHub 只读计划；当前仍不得调用 GitHub API、发布评论、运行本地 4B 或训练。
+Phase 2 已完成一次性运行、人工复核和证据冻结，不允许补跑。Phase 3 离线实现已完成，下一步由主对话复审代码与测试并提交；随后再批准精确目标 PR、认证模式和一次真实只读运行。当前不得调用 GitHub API、MiMo、发布评论、运行本地 4B 或训练。
 
 ## 7. 分支对话回报格式
 
@@ -137,7 +147,7 @@ Git状态：
 - 修改新仓库；
 - 读取固定官方源码；
 - 运行离线测试；
-- 创建和复审 Phase 3 GitHub 只读计划；
+- 复审并提交 Phase 3 离线实现；经主对话批准后只读运行一个精确 PR；
 - 保存本地 JSON/Markdown 和必要日志。
 
 禁止：

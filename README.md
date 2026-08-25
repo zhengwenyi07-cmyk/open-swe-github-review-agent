@@ -20,7 +20,9 @@ Phase 0、Phase 1 与 Phase 2 已完成：
 
 Phase 1 使用 `OPEN_SWE_REVIEWER_COMPATIBLE_LOCAL_SLICE`，并非官方完整 Pregel graph。尚未创建 GitHub App、写入 GitHub、运行本地 4B、训练或运行 Docker。
 
-Phase 2 已完成一次性 MiMo 三题 Smoke：两题生成合同合法且语义准确的 Review，人工核心缺陷召回 `2/3`、Finding precision `2/2`，虚假和重复 Finding 均为 `0`；逻辑题因 Review 合同失败而按漏报计。两个有效 Finding 均高估一级，结合 Phase 1 显示小样本中的一致严重度上偏。Phase 2 不补跑，且没有调用或写入 GitHub。当前唯一下一步是创建并复审 Phase 3 GitHub 只读计划。
+Phase 2 已完成一次性 MiMo 三题 Smoke：两题生成合同合法且语义准确的 Review，人工核心缺陷召回 `2/3`、Finding precision `2/2`，虚假和重复 Finding 均为 `0`；逻辑题因 Review 合同失败而按漏报计。两个有效 Finding 均高估一级，结合 Phase 1 显示小样本中的一致严重度上偏。Phase 2 不补跑，且没有调用或写入 GitHub。
+
+Phase 3 GitHub PR 只读接入已经完成离线实现：包含受限 GET Client、PR metadata 双读、files/raw diff 交叉验证、changed-line 门禁和 Fake Client 测试。真实 PR 与 MiMo Review 尚未运行。下一步是主对话复审并提交实现，再批准一个精确目标 PR；GitHub Review 发布仍被禁止。
 
 ## 文档导航
 

@@ -20,6 +20,9 @@ class ReviewRequest:
     base_commit: str
     candidate_commit: str
     test_commands: tuple[str, ...]
+    pull_number: int | None = None
+    pull_title: str = ""
+    pull_body: str = ""
 
 
 class ReviewModel(Protocol):

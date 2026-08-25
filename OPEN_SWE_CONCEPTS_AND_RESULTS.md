@@ -185,11 +185,17 @@ Phase 2 在逻辑错误、空列表边界错误和 viewer 删除权限扩大三�
 
 本阶段共调用模型 3 次，使用 3,155 input、1,473 output、4,628 total tokens。没有调用 GitHub API 或进行 GitHub 写入。八份原始产物及 Hash 已冻结，下一步只进入 Phase 3 GitHub 只读计划。
 
+### Phase 3：GitHub PR 只读接入（离线实现）
+
+Phase 3 已完成离线实现，但真实执行尚未开始。设计只替换输入层：从一个主对话批准的 PR 读取 metadata、Base/Head SHA、changed files 和 raw diff，生成稳定快照和 candidate-side changed-line 集合，再复用现有 MiMo 结构化 Review、Schema、语义门禁和 Markdown renderer。
+
+安全设计采用 metadata 前后双读、files/raw diff 交叉验证、严格输入预算和失败关闭。公开 PR 优先无 Token 读取；需要认证时仅使用细粒度只读 Token。任何 patch 缺失、SHA 漂移、文件或 Diff 超限都会在模型调用前拒绝。本阶段不运行 PR 代码，也不包含任何 GitHub 写 endpoint。
+
 ## 8. 当前未完成和未知问题
 
 1. 三题 Smoke 显示了跨类别的基本可用性，但样本量仍不足以证明广泛泛化能力。
 2. 官方完整 Reviewer Pregel graph 尚未运行。
-3. GitHub 只读、最小 Review 发布和本地模型对照均未开始。
+3. GitHub 只读已完成离线实现但尚未运行；最小 Review 发布和本地模型对照也未开始。
 4. 严重度在三个可观察样本中均高估一级，仍需在后续只读样本中继续观察。
 
 ## 9. 后续结果记录模板

@@ -20,6 +20,8 @@ def render_markdown(review: dict[str, Any]) -> str:
         "## Findings",
         "",
     ]
+    if "status" in review["tests"]:
+        lines.insert(4, f"- Test status: `{review['tests']['status']}`")
     if not review["findings"]:
         lines.append("No confirmed or suggested findings.")
     for index, finding in enumerate(review["findings"], start=1):
@@ -48,5 +50,8 @@ def render_markdown(review: dict[str, Any]) -> str:
             ]
         )
     lines.extend(["", "## Test Commands", ""])
-    lines.extend(f"- `{command}`" for command in review["tests"]["commands"])
+    if review["tests"]["commands"]:
+        lines.extend(f"- `{command}`" for command in review["tests"]["commands"])
+    else:
+        lines.append("No commands executed in GitHub read-only mode.")
     return "\n".join(lines) + "\n"
