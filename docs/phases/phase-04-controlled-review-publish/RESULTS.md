@@ -21,7 +21,7 @@ publish_retry_allowed=false
 automatic_post_retries=0
 merge_or_repository_write_performed=false
 phase_5_allowed=false
-next_step=HUMAN_PROJECT_REVIEW
+next_step=PROJECT_CLOSEOUT_COMPLETE
 ```
 
 ## 2. 计划与实际结果
@@ -203,7 +203,7 @@ phase_4_final_status=COMPLETED_WITH_VERIFICATION_FAILURE
 evidence_freeze_allowed=true
 phase_4_retry_allowed=false
 phase_5_allowed=false
-next_step=HUMAN_PROJECT_REVIEW
+next_step=PROJECT_CLOSEOUT_COMPLETE
 ```
 
 本阶段到此结束。后续若继续研究，应把“Finding 证据中的代码片段与锚点行一致性”作为独立改进问题，而不是重跑本 PR 或再发一条评论。

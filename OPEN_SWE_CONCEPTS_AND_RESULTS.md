@@ -246,7 +246,7 @@ Phase 4 只增加一个变量：把经人工批准 Hash 的本地 Review Payload
 不能说：
 
 - “MiMo 已经运行官方完整 Open SWE Reviewer graph。”
-- “GitHub App 已经部署。”
+- “Phase 4 已成功完成自动发布闭环。”
 - “Agent 因一次真实 PR `APPROVE` 达到了某个召回率或准确率。”
 - “本地 4B 已适配 Open SWE。”
 

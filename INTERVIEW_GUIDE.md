@@ -26,7 +26,7 @@ Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。Phase 2 又在逻
 
 ### 下一步
 
-Phase 2、Phase 3 和 Phase 4 均已冻结且不补跑。Phase 4 的远端副作用和失败结果都如实保留；下一步是人工项目复盘，不自动进入 Phase 5。
+Phase 2、Phase 3 和 Phase 4 均已冻结且不补跑。Phase 4 的远端副作用和失败结果都如实保留；项目复盘与面试材料已经完成，Phase 5 暂不启动。
 
 ## 3. STAR 版本（当前草稿）
 
@@ -118,15 +118,15 @@ GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSO
 | Phase 4 | 受控 GitHub PR，最小权限 App + 人工批准 Payload | 1 次 COMMENT 写入；远端 Review 已创建，但验证失败且锚错一行；无重试 | 完成，含负结果 |
 | Phase 5 | 本地模型对照 | 根据前序结果决定 | 可选 |
 
-## 9. 项目完成后应补充的面试材料
+## 9. 最终面试材料
 
-- 一张架构图；
-- 一页实验指标表；
-- 一个正确 Finding 和一个误报/漏报案例；
-- GitHub 受控 PR Review 截图；
-- 权限模型说明；
-- 复现命令；
-- 最终 STAR 版本；
-- 局限性与下一步。
+项目收尾材料已整理在 `docs/final/`：
 
-每完成一个阶段，都应更新本文中的结果数字、代表性案例和 STAR 的 Result，而不是等到项目结束凭记忆补写。
+- `ARCHITECTURE.md`：架构与权限图；
+- `EXPERIMENT_SUMMARY.md`：Phase 1～4 统一实验表；
+- `CASE_STUDIES.md`：正确 Finding、合同失败和错误锚点；
+- `TECHNICAL_RETROSPECTIVE.md`：最终技术复盘；
+- `STAR_INTERVIEW_SCRIPT.md`：30 秒、2 分钟和追问讲稿；
+- `RESUME_PROJECT_DESCRIPTION.md`：中英文简历描述。
+
+面试前优先复习三个数字：Phase 1 `1/1`、Phase 2 `2/3` 与 `2/2`、Phase 4 错误锚点 `7→8`。不要把 Phase 4 的远端副作用表述为成功发布闭环。

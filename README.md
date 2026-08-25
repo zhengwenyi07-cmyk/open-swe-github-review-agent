@@ -26,6 +26,8 @@ Phase 3 GitHub PR 只读接入已在公开 PR `pallets/click#3021` 上完成唯�
 
 Phase 4 已在项目所有者控制的 PR #1 上执行一次受控写入。单仓库 GitHub App、只读 Prepare、独立 Payload Hash Gate 和唯一 `COMMENT` 写路由均真实运行；GitHub 创建了 Review `5020924942`，且没有第二次 POST 或其他仓库副作用。但发布后验证返回 `REMOTE_COMMENTS_MISMATCH`，人工复核发现评论锚定第 7 行，而真正缺陷位于第 8 行。因此 Phase 4 最终为 `COMPLETED_WITH_VERIFICATION_FAILURE`，不是成功发布。原始证据和只读人工审计均已保留，Phase 4 不补跑，也不自动进入 Phase 5。
 
+项目当前冻结为 `COMPLETED_WITH_DOCUMENTED_LIMITATIONS`：Phase 1～3 完成，Phase 4 含真实负结果，Phase 5 未启动。最终架构、统一实验表、三个案例、技术复盘、STAR 讲稿和简历描述见 [docs/final/](docs/final/README.md)。
+
 ## 文档导航
 
 建议按以下顺序阅读：
@@ -37,6 +39,7 @@ Phase 4 已在项目所有者控制的 PR #1 上执行一次受控写入。单�
 5. [docs/UPSTREAM_AND_ARCHITECTURE.md](docs/UPSTREAM_AND_ARCHITECTURE.md)：固定官方 Reviewer 路径及当前本地切片与官方 graph 的差距。
 6. [docs/MIMO_INTEGRATION.md](docs/MIMO_INTEGRATION.md)：MiMo Chat Completions 适配和拟执行命令。
 7. [docs/phases/README.md](docs/phases/README.md)：每阶段计划、技术讲解和结果文档的统一规范。
+8. [docs/final/README.md](docs/final/README.md)：最终交付材料、面试讲稿和简历描述。
 
 每个实现阶段由单独分支对话完成，并维护 `PLAN.md`、`CONCEPTS.md`、`RESULTS.md`。当前主对话负责批准计划、复审结果、决定下一阶段，并更新上述长期文档。已完成历史只追加勘误；未开始阶段允许根据真实结果调整。
 

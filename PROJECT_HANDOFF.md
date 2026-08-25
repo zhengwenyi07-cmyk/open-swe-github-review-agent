@@ -7,6 +7,7 @@
 ```text
 project=open-swe-github-review-agent
 repository=/home/zhengwenyi/projects/open-swe-github-review-agent
+project_status=COMPLETED_WITH_DOCUMENTED_LIMITATIONS
 phase_0_static_preparation=COMPLETED
 phase_1_real_local_review=COMPLETED
 phase_1_plan_documents=READY
@@ -39,13 +40,16 @@ github_app_created=true
 github_write_performed=true
 github_review_write_requests=1
 phase_4_retry_allowed=false
+phase_5_status=NOT_STARTED
+phase_5_allowed=false
+final_delivery_materials=READY
 review_publish_allowed=false
 local_4b_run=false
 training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=HUMAN_PROJECT_REVIEW
+next_step=NONE_UNLESS_USER_EXPLICITLY_REOPENS_PROJECT
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -132,7 +136,7 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 
 ## 6. 当前分支对话任务
 
-Phase 2、Phase 3 和 Phase 4 都已完成一次性运行并进入证据冻结。Phase 4 的远端 Review 已创建，但发布后验证失败且人工确认行号锚点错误；不允许再次 POST、补发、编辑或删除来改变实验结果。当前只允许复审和冻结 Phase 4 证据、更新项目结论，再由主对话决定是否结束项目；不得自动进入 Phase 5。
+Phase 1～4 已完成并冻结。Phase 4 的远端 Review 已创建，但发布后验证失败且人工确认行号锚点错误；不允许再次 POST、补发、编辑或删除来改变实验结果。最终交付材料位于 `docs/final/`。项目进入完成状态；除非用户显式重开研究，否则不得启动 Phase 5。
 
 ## 7. 分支对话回报格式
 
