@@ -1,0 +1,16 @@
+{
+  "fixture_id": "phase1_logic_error_v1",
+  "repository": "local/phase1-review-fixture",
+  "base_commit": "030396458d0e6fd6b8bf444c0ef24d1ea495b5b3",
+  "candidate_commit": "746e90b56d3150d96acbff4a0f02308ab151669c",
+  "diff_sha256": "e025350863e5054547661826f042d4c6e8ab40008947e35e221c12e9c10061ea",
+  "test_commands": [
+    "python -m unittest test_calculator.py"
+  ],
+  "expected_primary_finding": {
+    "file": "calculator.py",
+    "line": 2,
+    "category": "correctness",
+    "severity": "high"
+  }
+}

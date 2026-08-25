@@ -1,0 +1,213 @@
+# Open SWE GitHub Review Agent：概念、实现与结果
+
+> 用途：长期技术复盘。半年后应能依靠本文重新理解项目为什么存在、各组件如何协作、哪些结果真实发生、哪些结论仍只是计划。
+
+## 1. 项目问题是什么
+
+普通 LLM 可以阅读代码并给出建议，但一个可信的 GitHub Review Agent 还必须解决四个工程问题：
+
+1. **上下文边界：**模型看到的是哪一个 Commit/PR、哪一段 Diff？
+2. **证据边界：**评论是否能锚定真实改动行，还是在猜测未改代码？
+3. **执行边界：**需要运行哪些测试，结果如何与 Review 绑定？
+4. **权限边界：**什么时候只能本地输出，什么时候才允许写入 GitHub？
+
+本项目的研究重点不是做一个聊天式代码解释器，而是把这些边界组合成可运行、可评测的 Review workflow。
+
+## 2. 为什么选择 Open SWE
+
+Open SWE 官方项目已经包含 Coding、Reviewer、Sandbox、GitHub 集成和 LangGraph 运行时。固定 Commit 的 Reviewer 不是简单地把完整 Diff 塞给模型，而是预先准备仓库、计算 changed-line 集合、维护结构化 findings，并通过 Review 专用工具发布。
+
+这与本项目需求高度一致：Review Agent 应该“审查并报告”，而不是偷偷改代码或替用户 Merge。因此项目选择沿用官方 Reviewer 路径和边界，而不是复制旧 mini-swe Agent loop。
+
+## 3. 核心概念
+
+### 3.1 Base、Candidate 与 Diff
+
+- Base Commit：改动前的确定版本。
+- Candidate Commit：待审查版本。
+- Unified Diff：Base 到 Candidate 的文本变化。
+- Changed-line set：Candidate 侧真实新增或修改行的 `(file, line)` 集合。
+
+Finding 必须落在 changed-line set 中。这并不保证 Finding 正确，但可以阻止 Agent 把 Review 锚定到 PR 没有修改的任意代码。
+
+### 3.2 Finding、Suggestion 与 Uncertainty
+
+- `confirmed` finding：有直接代码或测试证据的缺陷。
+- `suggestion` finding：不会被描述为确定故障的改进建议。
+- `uncertainty`：现有 Diff 无法确认、需要更多上下文的问题。
+
+三者分离是为了控制幻觉：模型可以表达不确定，但不能把“可能有问题”伪装成已证实的高严重度缺陷。
+
+### 3.3 Review 决策
+
+- `APPROVE`：没有 finding。
+- `COMMENT`：有建议、低中风险问题或不阻塞结论。
+- `REQUEST_CHANGES`：至少存在一个 confirmed high/critical finding。
+
+当前合同故意简单，后续只有真实 Smoke 证明需要时才扩展。
+
+### 3.4 Model 与 Sandbox 的职责
+
+Model 负责分析 Diff、形成 summary/findings/uncertainties/decision。Sandbox 负责读取精确 Diff 和运行固定检查。Workflow 把二者组合，并在最终输出前执行 Schema 和语义验证。
+
+模型不应伪造测试结果；Sandbox 也不应替模型选择“正确答案”。
+
+## 4. 官方 Reviewer 路径
+
+固定上游身份：
+
+```text
+Repository: https://github.com/langchain-ai/open-swe.git
+Commit:     daab5de0baf2d8b16a7e2ae3fadbcb632bace8cc
+Graph:      agent.graphs.reviewer:traced_reviewer_agent
+Factory:    agent.reviewer:get_reviewer_agent
+```
+
+从源码确认的关键路径：
+
+```text
+langgraph.json
+  -> agent.graphs.reviewer:traced_reviewer_agent
+  -> agent.reviewer:get_reviewer_agent
+  -> prepare_review_repo / materialize_review_diff
+  -> compute_diff_line_set
+  -> reviewer tools: add/update/list findings, publish_review
+```
+
+完整官方 graph 还涉及 GitHub PR 元数据、Sandbox provider、Deep Agents middleware 和发布工具。当前 Phase 0 没有运行这些外部链路。
+
+## 5. 当前本地实现
+
+### 5.1 `diff_parser.py`
+
+解析 Unified Diff 的 hunk header，跟踪 Candidate 侧行号，并生成所有新增/修改行的锚点集合。删除行只推进 Base 行号，不会被当作 Candidate 可评论行。
+
+### 5.2 `contracts.py`
+
+先使用 Draft 2020-12 JSON Schema 校验字段和类型，再做 Schema 难以表达的语义检查：
+
+- Finding 是否落在 Diff；
+- 是否重复；
+- decision 与 finding 严重度/assessment 是否一致。
+
+### 5.3 `workflow.py`
+
+最小执行顺序：
+
+1. Sandbox 读取 Base/Candidate Diff。
+2. Model 生成 Review candidate。
+3. Sandbox 运行固定测试。
+4. Workflow 写入真实 Candidate Commit 和测试结果。
+5. 合同验证最终 Review。
+
+### 5.4 `fakes.py`
+
+Fake Model 返回确定性 Review；Fake Sandbox 返回固定 Diff 和测试返回码。它们用于验证控制流和拒绝路径，不用于评估模型质量。
+
+### 5.5 `render.py`
+
+把已验证 JSON 转换成人可读 Markdown。渲染器不重新解释模型内容，也不改变决策。
+
+### 5.6 `mimo.py`
+
+Open SWE 默认 OpenAI 路由会使用 Responses API。MiMo 是 OpenAI-compatible Chat Completions，因此通过预配置 `ChatOpenAI` 注入，并明确设置 `use_responses_api=False`。
+
+固定参数：
+
+```text
+model=mimo-v2.5-pro
+base_url=https://api.xiaomimimo.com/v1
+temperature=0.0
+max_tokens=4096
+max_retries=0
+```
+
+该模块目前只完成离线构造测试，没有发送真实请求。
+
+## 6. 固定本地 Fixture
+
+Fixture 是一个微型 Python 仓库。Base 版本在分母为零时返回既定 sentinel；Candidate 错误地把判断改成分子为零，导致零分母路径抛出异常。
+
+```text
+Base:      030396458d0e6fd6b8bf444c0ef24d1ea495b5b3
+Candidate: 746e90b56d3150d96acbff4a0f02308ab151669c
+Diff SHA:  e025350863e5054547661826f042d4c6e8ab40008947e35e221c12e9c10061ea
+```
+
+预期主要 Finding：`calculator.py:2`，category=`correctness`，severity=`high`。固定测试 `python -m unittest test_calculator.py` 在 Candidate 上失败。
+
+## 7. 已完成结果
+
+### Phase 0：静态合同
+
+真实完成内容：
+
+- 官方仓库与 Commit 已核验并保持只读；
+- 新仓库和 Python 3.12 `.venv` 已创建；
+- Fixture 可确定性重建；
+- Diff Hash 与 Base/Candidate Commit 匹配；
+- Review Schema 合法；
+- Fake workflow 能生成 JSON 和 Markdown；
+- Changed-line、重复 Finding、决策语义和未知字段拒绝测试通过；
+- MiMo Adapter 构造参数和秘密类型测试通过；
+- `pip check` 通过。
+
+测试结果：
+
+```text
+Ran 13 tests
+OK
+```
+
+这说明本地合同和依赖注入设计可运行。它不说明 MiMo 已发现缺陷，也不说明官方 Open SWE Reviewer 已在本地工作。
+
+## 8. 当前未完成和未知问题
+
+1. MiMo Tool Call 预检尚未付费执行。
+2. MiMo 尚未对 Fixture 生成真实 Review。
+3. 官方 Reviewer graph 如何以最少依赖接入本地固定仓库仍需实现。
+4. 是否需要保留官方 `publish_review` 工具接口、但将终点替换为本地 sink，仍需通过真实集成确定。
+5. 官方 graph 的 Prompt/工具复杂度是否会影响 MiMo Review 质量尚未知。
+6. 3 题 Smoke、GitHub 只读、最小 Review 发布和本地模型对照均未开始。
+
+## 9. 后续结果记录模板
+
+每个阶段结束后在本文追加，不覆盖历史：
+
+```text
+阶段：
+日期与 Git Commit：
+研究问题：
+输入/任务：
+模型与配置：
+实际执行命令：
+实现变更：
+定量结果：
+代表性成功：
+代表性失败：
+安全与权限状态：
+结论：
+对下一阶段的影响：
+明确未执行内容：
+```
+
+## 10. 面试时必须诚实区分的内容
+
+可以说：
+
+- “我基于固定 Open SWE Reviewer 源码设计了 changed-line 约束和结构化 Review 合同。”
+- “项目使用 AI 辅助实现；我负责目标、边界、实验设计、复审和结果决策，并能解释关键实现与权衡。”
+- “Phase 0 的 Fake workflow 验证了合同，不代表真实模型效果。”
+
+在真实结果出现前不能说：
+
+- “MiMo 已经成功完成 Open SWE Review。”
+- “GitHub App 已经部署。”
+- “Agent 在真实 PR 上达到某个准确率。”
+- “本地 4B 已适配 Open SWE。”
+
+## 11. 从旧项目迁移的知识，而不是代码
+
+复用的经验包括：强模型先验证框架、Smoke 漏斗、结构化指标、凭据隔离、模型失败与基础设施失败分离。没有迁移 mini-swe loop、YAML、Parser、完成协议、Trajectory 或历史绝对路径。
+
+因此新项目能延续旧研究结论，但不会把两个 Scaffold 的结果混在一起。

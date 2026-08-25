@@ -1,0 +1,10 @@
+diff --git a/calculator.py b/calculator.py
+index c00f808..c344c81 100644
+--- a/calculator.py
++++ b/calculator.py
+@@ -1,4 +1,4 @@
+ def ratio(numerator: int, denominator: int) -> float:
+-    if denominator == 0:
++    if numerator == 0:
+         return 0.0
+     return numerator / denominator

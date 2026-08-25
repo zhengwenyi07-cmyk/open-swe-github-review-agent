@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/langchain-ai/open-swe.git",
+  "commit": "daab5de0baf2d8b16a7e2ae3fadbcb632bace8cc",
+  "commit_date": "2026-08-24T23:45:36-04:00",
+  "commit_subject": "fix: hide threads after resolving (#2177)",
+  "license": "MIT",
+  "registered_reviewer_graph": "agent.graphs.reviewer:traced_reviewer_agent",
+  "reviewer_factory": "agent.reviewer:get_reviewer_agent",
+  "source_checkout": "/home/zhengwenyi/projects/open-swe-upstream"
+}
