@@ -1,9 +1,9 @@
 {
-  "approval_status": "NOT_APPROVED",
-  "authentication_mode": null,
+  "approval_status": "APPROVED",
+  "authentication_mode": "PUBLIC",
   "github_write_allowed": false,
-  "pull_number": null,
-  "repository": null,
+  "pull_number": 3021,
+  "repository": "pallets/click",
   "review_publish_allowed": false,
   "version": "phase3_github_readonly_target_v1"
 }
