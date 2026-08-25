@@ -1,10 +1,10 @@
 {
-  "approval_status": "NOT_APPROVED",
-  "authentication_mode": null,
-  "base_sha": null,
-  "head_sha": null,
+  "approval_status": "APPROVED",
+  "authentication_mode": "GITHUB_APP",
+  "base_sha": "9fe5f09914d62a1dc6d8966e800b5eb43c573fe0",
+  "head_sha": "df96cd3e49b65e09ec1891cc419e0753e0583958",
   "prepare_github_write_allowed": false,
-  "pull_number": null,
-  "repository": null,
+  "pull_number": 1,
+  "repository": "zhengwenyi07-cmyk/open-swe-github-review-agent",
   "version": "phase4_target_v1"
 }
