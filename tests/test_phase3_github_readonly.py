@@ -541,7 +541,7 @@ class Phase3GitHubReadOnlyTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "OUTPUT_PATH_INVALID"):
                     runner.reserve_output_directory()
 
-    def test_cli_check_is_offline_and_reports_not_started(self) -> None:
+    def test_cli_check_is_offline_and_reports_current_lifecycle(self) -> None:
         completed = subprocess.run(
             [str(ROOT / ".venv" / "bin" / "python"), str(RUNNER_PATH), "--check"],
             cwd=ROOT,
@@ -550,7 +550,8 @@ class Phase3GitHubReadOnlyTests(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        self.assertIn("execution=NOT_STARTED", completed.stdout)
+        expected = "execution=PASS" if (ROOT / "artifacts" / "phase3").exists() else "execution=NOT_STARTED"
+        self.assertIn(expected, completed.stdout)
         self.assertIn("github_write=false", completed.stdout)
 
 

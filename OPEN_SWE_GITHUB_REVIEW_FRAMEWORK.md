@@ -2,11 +2,11 @@
 
 > 文档性质：可调整的研究与实现路线，不是不可变规格。
 >
-> 当前状态：Phase 0～2 已完成；Phase 2 人工核心缺陷召回 `2/3`、Finding precision `2/2`。
+> 当前状态：Phase 0～3 已完成；Phase 3 已在公开 PR `pallets/click#3021` 上验证真实 GitHub 只读输入闭环。
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：主对话复审并提交 Phase 3 离线实现，再批准精确目标 PR；尚未批准联网执行。
+> 当前唯一下一步：停在人工决策门，由主对话单独设计是否需要 Phase 4；禁止自动进入 GitHub 写入。
 
 ## 1. 为什么建立这个项目
 
@@ -178,7 +178,7 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 
 实际结果：三题只运行一次，边界题与权限题均生成准确、无误报的 changed-line Review；逻辑题在 `REVIEW_VALIDATION` 阶段因合同失败而失败关闭。人工核心缺陷召回 `2/3`、Finding precision `2/2`、虚假和重复 Finding 均为 `0`。两个有效 Finding 均高估一级，与 Phase 1 的严重度偏差同向。决定进入 Phase 3 GitHub 只读计划，但不补跑 Phase 2，也不自动执行 Phase 3。
 
-### Phase 3：GitHub 只读接入（离线实现完成，未运行）
+### Phase 3：GitHub 只读接入（已完成）
 
 目标：对一个主对话批准的真实 PR 完成只读快照与本地 Review，不发布评论。
 
@@ -186,7 +186,9 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 
 计划采用 metadata A → files → raw diff → metadata B 的快照协议，要求 Base/Head SHA 稳定，并交叉验证文件列表、patch、raw diff 和 changed-line 集合。patch 缺失、Diff 超限、二进制或 SHA 漂移均失败关闭，不执行 PR 代码。
 
-验收门槛：成功读取一个批准的 PR 快照；本地 Review Schema 与 changed-line 语义合法；GitHub 写操作为 `0`；凭据扫描和人工复核通过。离线 Client、Runner 和 Fake 测试已经实现并停在联网前，不能自动进入 Phase 4。
+验收门槛：成功读取一个批准的 PR 快照；本地 Review Schema 与 changed-line 语义合法；GitHub 写操作为 `0`；凭据扫描和人工复核通过。
+
+实际结果：目标合同单独批准公开 PR `pallets/click#3021` 后，Runner 用 4 次 GET 获取稳定的 Base/Head、3 个文件、4,659 bytes raw diff 和 38 个 candidate changed lines，并验证它们属于同一快照。MiMo 只调用一次，输出合同合法的 `APPROVE`、0 个 Finding、1 个锚定 `src/click/termui.py:122` 的 Uncertainty；没有重试、执行 PR 代码、运行测试或写入 GitHub。该 PR 没有冻结人工 Gold Finding，因此本阶段不报告召回率或 precision；`APPROVE` 也不是运行时正确性证明。六份本地产物经人工复审后原样冻结，当前停在人工决策门，不能自动进入 Phase 4。
 
 ### Phase 4：最小 GitHub Review 写入（初步）
 

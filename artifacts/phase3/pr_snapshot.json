@@ -1,0 +1,42 @@
+{
+  "base_sha": "27aaed3fe5bcd6adedd6e91de234914af9859cf1",
+  "body": "This changes the implementation of the fixes in #1836 and #2093 to address the problem that they created when `click.prompt` or `click.confirm` has a `prompt_suffix` value which is empty.\r\n\r\nThis still fixes the problems reported in #665 and #2092 but does so without modifying the prompt and adding a trailing space.\r\n\r\nPreviously, the problem was solved by trimming all trailing space characters from the prompt and then adding a single trailing space to every prompt. This was only visible if the last character in the prompt wasn't a space character. In those cases a prompt like \"This is my prompt\" would render as \"This is my prompt \". Additionally, in the previous solution, if the `err=True` argument was passed, that final trailing space character that was added would be sent to STDOUT while the rest of the prompt would go to STDERR. This also wasn't very apparent since it was a space character.\r\n\r\nThis different implementation uses the last character of the prompt to work around #665 and #2092 instead of adding a space character. This fixes most of the potentially confusing behavior. It does retain one confusing behavior which is described above, where if you use `err=True` the last character of the prompt is sent to STDOUT instead of STDERR. Previously, this last character sent to STDOUT would always be a space character. Now if the last character of the prompt is not a space character, that final character will go to STDOUT.\r\n\r\nFor example if you call\r\n\r\n```python\r\nclick.prompt(\"bar\", prompt_suffix=\"\", err=True)\r\n```\r\n\r\nThe `ba` will go to STDERR and the `r` will go to STDOUT. Previously `bar` would go to STDERR and an added ` ` would go to STDOUT.\r\n\r\nThis odd behavior, which is already present but just applies to a space character, is worth accepting so that the `prompt_suffix` correctly renders the suffix as it did in version 7.1.2 and prior.\r\n\r\nThis also adds unit tests for cases where `prompt_suffix` is empty.\r\n\r\nThis fixes #3019\r\n\r\n<!--\r\nBefore opening a PR, open a ticket describing the issue or feature the\r\nPR will address. An issue is not required for fixing typos in\r\ndocumentation, or other simple non-code changes.\r\n\r\nReplace this comment with a description of the change. Describe how it\r\naddresses the linked ticket.\r\n-->\r\n\r\n<!--\r\nLink to relevant issues or previous PRs, one per line. Use \"fixes\" to\r\nautomatically close an issue.\r\n\r\nfixes #<issue number>\r\n-->\r\n\r\n<!--\r\nEnsure each step in CONTRIBUTING.rst is complete, especially the following:\r\n\r\n- Add tests that demonstrate the correct behavior of the change. Tests\r\n  should fail without the change.\r\n- Add or update relevant docs, in the docs folder and in code.\r\n- Add an entry in CHANGES.rst summarizing the change and linking to the issue.\r\n- Add `.. versionchanged::` entries in any relevant code docs.\r\n-->\r\n",
+  "candidate_changed_lines": 38,
+  "changed_files": 3,
+  "changed_lines_sha256": "924d6eaf87799b82eb8dc509aa04fd8d84e8de61b9ee100613ef9cd985cb435c",
+  "diff_sha256": "f3f127e2a1347b94edae445837f140d849585f15dd3801e7092eeeb9b74f6cb2",
+  "files": [
+    {
+      "additions": 2,
+      "changes": 2,
+      "deletions": 0,
+      "filename": "CHANGES.rst",
+      "patch_sha256": "832ad3e04d84dc3b433d1635ac6e3765030da7ba584179477fd3750ab0b1a7b3",
+      "status": "modified"
+    },
+    {
+      "additions": 12,
+      "changes": 18,
+      "deletions": 6,
+      "filename": "src/click/termui.py",
+      "patch_sha256": "a1faa0ad9557ed630e408292247f13a82cb058078c28a9fe8e1b4c0b78347f28",
+      "status": "modified"
+    },
+    {
+      "additions": 24,
+      "changes": 24,
+      "deletions": 0,
+      "filename": "tests/test_utils.py",
+      "patch_sha256": "c68e99a61f8bfcf27cc213274b6ec4c0f8e227cca5a2cedaa9529e9af64638b8",
+      "status": "modified"
+    }
+  ],
+  "files_sha256": "ca4aa1bece12bb91f3df89fd375c017bc8cece0982ca7b788e5fdcc7c5f3cfcf",
+  "head_sha": "27de74af68bfd967c639ad4beb330fa4ed0d470f",
+  "metadata_sha256": "92f9668e90fa0f28c96462e8c823007d6bd7b854e4948ea103644a92d01cdc27",
+  "pull_number": 3021,
+  "raw_diff_bytes": 4659,
+  "repository": "pallets/click",
+  "state": "closed",
+  "title": "Fix rendering when `prompt_suffix` is empty"
+}

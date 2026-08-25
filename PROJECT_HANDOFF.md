@@ -20,10 +20,15 @@ phase_2_human_core_bug_recall=2/3
 phase_2_human_finding_precision=2/2
 phase_2_retry_allowed=false
 severity_bias=SYSTEMATIC_ONE_LEVEL_OVERESTIMATION_OBSERVED
-phase_3_plan_status=READY
-phase_3_execution_status=IMPLEMENTED_NOT_RUN
-phase_3_target_contract_status=NOT_APPROVED
-github_read_performed=false
+phase_3_plan_status=COMPLETED
+phase_3_execution_status=COMPLETED
+phase_3_target_contract_status=APPROVED_AND_CONSUMED
+phase_3_repository=pallets/click
+phase_3_pull_number=3021
+phase_3_review_decision=APPROVE
+phase_3_finding_count=0
+phase_3_uncertainty_count=1
+github_read_performed=true
 official_reviewer_graph_executed=false
 github_app_created=false
 github_write_performed=false
@@ -33,7 +38,7 @@ training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=MAIN_REVIEW_COMMIT_THEN_APPROVE_TARGET_PR
+next_step=HUMAN_DECISION_GATE
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -101,9 +106,12 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - Phase 1 与 Phase 2 的三个可观察正确 Finding 均高估一个严重度等级；这是小样本观察，不是统计证明。
 - Phase 2 的核心召回先经冻结语义 rubric 筛选，最终指标由主对话人工确认；单题失败会保存脱敏证据并继续，且不存在自动进入下一阶段的门槛。
 - Phase 2 失败证据区分六个固定执行阶段及模型响应子原因；Scoring Rubric 与 Fixture 预期身份会交叉验证。
-- Phase 3 的文档、只读 Client、Runner 和 Fake Client 测试已完成离线实现；尚未读取 GitHub 或调用 MiMo。
+- Phase 3 已在公开 PR `pallets/click#3021` 上完成唯一一次正式只读运行，并由主对话人工复审通过；六份原始产物及 SHA256 已冻结。
 - Phase 3 采用 PR metadata 双读、Base/Head SHA 稳定性、files/raw diff 交叉校验和 changed-line 门禁；patch 缺失或超限时失败关闭。
-- Phase 3 目标合同当前为 `NOT_APPROVED`；CLI repository、PR number 和认证模式必须与批准合同完全一致。
+- Phase 3 快照固定 Base `27aaed3...`、Head `27de74a...`、3 个 changed files、4,659 bytes raw diff 和 38 个 candidate changed lines；各层身份验证一致。
+- MiMo 只调用 1 次，返回 `APPROVE`、0 个 Finding、1 个锚定 `src/click/termui.py:122` 的 Uncertainty；Schema 与语义验证通过。
+- 该 PR 没有冻结人工 Gold Finding，不能声称召回率或 Finding precision；只读模式未执行 PR 测试，`APPROVE` 不是运行时正确性证明。
+- Phase 3 共执行 4 次 GitHub GET，写请求为 0；没有执行 PR 代码、发布 Review 或自动重试。
 - Phase 3 专项离线测试 `25/25`、完整回归 `64` 项通过（另有 1 项既有已消费生命周期跳过）。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
@@ -111,7 +119,7 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 
 ## 6. 当前分支对话任务
 
-Phase 2 已完成一次性运行、人工复核和证据冻结，不允许补跑。Phase 3 离线实现已完成，下一步由主对话复审代码与测试并提交；随后再批准精确目标 PR、认证模式和一次真实只读运行。当前不得调用 GitHub API、MiMo、发布评论、运行本地 4B 或训练。
+Phase 2 与 Phase 3 都已完成一次性运行、人工复核和证据冻结，不允许补跑。当前停在人工决策门；Phase 4 必须由主对话单独设计和批准，不能自动发布评论、调用 GitHub 写接口、运行本地 4B 或训练。
 
 ## 7. 分支对话回报格式
 
@@ -138,7 +146,7 @@ Git状态：
 明确未执行内容：
 ```
 
-主对话收到结果后必须先区分：实现缺陷、基础设施失败、模型正常失败。Phase 2 已结束，不能补跑或自动进入 Phase 3 执行。
+主对话收到结果后必须先区分：实现缺陷、基础设施失败、模型正常失败。Phase 2 与 Phase 3 均已结束，不能补跑或自动进入 Phase 4。
 
 ## 8. 当前允许与禁止
 
@@ -147,7 +155,7 @@ Git状态：
 - 修改新仓库；
 - 读取固定官方源码；
 - 运行离线测试；
-- 复审并提交 Phase 3 离线实现；经主对话批准后只读运行一个精确 PR；
+- 只读检查已冻结的 Phase 3 证据和维护说明文档；
 - 保存本地 JSON/Markdown 和必要日志。
 
 禁止：

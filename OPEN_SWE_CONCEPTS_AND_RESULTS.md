@@ -185,17 +185,21 @@ Phase 2 在逻辑错误、空列表边界错误和 viewer 删除权限扩大三�
 
 本阶段共调用模型 3 次，使用 3,155 input、1,473 output、4,628 total tokens。没有调用 GitHub API 或进行 GitHub 写入。八份原始产物及 Hash 已冻结，下一步只进入 Phase 3 GitHub 只读计划。
 
-### Phase 3：GitHub PR 只读接入（离线实现）
+### Phase 3：GitHub PR 只读接入（已完成）
 
-Phase 3 已完成离线实现，但真实执行尚未开始。设计只替换输入层：从一个主对话批准的 PR 读取 metadata、Base/Head SHA、changed files 和 raw diff，生成稳定快照和 candidate-side changed-line 集合，再复用现有 MiMo 结构化 Review、Schema、语义门禁和 Markdown renderer。
+Phase 3 只替换输入层：从一个主对话批准的 PR 读取 metadata、Base/Head SHA、changed files 和 raw diff，生成稳定快照和 candidate-side changed-line 集合，再复用现有 MiMo 结构化 Review、Schema、语义门禁和 Markdown renderer。
 
 安全设计采用 metadata 前后双读、files/raw diff 交叉验证、严格输入预算和失败关闭。公开 PR 优先无 Token 读取；需要认证时仅使用细粒度只读 Token。任何 patch 缺失、SHA 漂移、文件或 Diff 超限都会在模型调用前拒绝。本阶段不运行 PR 代码，也不包含任何 GitHub 写 endpoint。
+
+正式运行选择公开、已合并且满足预算的 `pallets/click#3021`。4 次 GitHub GET 获取并验证了 Base `27aaed3...`、Head `27de74a...`、3 个文件、4,659 bytes raw diff 和 38 个 candidate changed lines。MiMo V2.5 Pro 只调用一次，使用 2,937 input、2,987 output、5,924 total tokens，在 63.601 秒内返回 `APPROVE`、0 个 Finding 和 1 个 Uncertainty。Uncertainty 锚定到真实新增行 `src/click/termui.py:122`，询问版本号是否符合发布计划。
+
+该结果证明 GitHub PR 输入可以替代本地 Fixture，同时保持既有 Review 合同和 changed-line 边界。它不能证明更广泛的召回率或 precision，因为该 PR 没有冻结人工 Gold Finding；只读模式也没有执行测试，所以 `APPROVE` 仅表示静态 Diff 审查未确认问题。GitHub 写请求、Review 发布、PR 代码执行和自动重试均为 0。六份原始产物经人工复审后冻结。
 
 ## 8. 当前未完成和未知问题
 
 1. 三题 Smoke 显示了跨类别的基本可用性，但样本量仍不足以证明广泛泛化能力。
 2. 官方完整 Reviewer Pregel graph 尚未运行。
-3. GitHub 只读已完成离线实现但尚未运行；最小 Review 发布和本地模型对照也未开始。
+3. GitHub 只读已在一个公开 PR 上完成；样本量只有 1，最小 Review 发布和本地模型对照仍未开始。
 4. 严重度在三个可观察样本中均高估一级，仍需在后续只读样本中继续观察。
 
 ## 9. 后续结果记录模板
@@ -227,11 +231,11 @@ Phase 3 已完成离线实现，但真实执行尚未开始。设计只替换输
 - “项目使用 AI 辅助实现；我负责目标、边界、实验设计、复审和结果决策，并能解释关键实现与权衡。”
 - “Phase 0 的 Fake workflow 验证了合同，不代表真实模型效果。”
 
-在真实结果出现前不能说：
+不能说：
 
-- “MiMo 已经成功完成 Open SWE Review。”
+- “MiMo 已经运行官方完整 Open SWE Reviewer graph。”
 - “GitHub App 已经部署。”
-- “Agent 在真实 PR 上达到某个准确率。”
+- “Agent 因一次真实 PR `APPROVE` 达到了某个召回率或准确率。”
 - “本地 4B 已适配 Open SWE。”
 
 ## 11. 从旧项目迁移的知识，而不是代码
