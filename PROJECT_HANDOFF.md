@@ -8,7 +8,8 @@
 project=open-swe-github-review-agent
 repository=/home/zhengwenyi/projects/open-swe-github-review-agent
 phase_0_static_preparation=COMPLETED
-phase_1_real_local_review=NOT_STARTED
+phase_1_real_local_review=IMPLEMENTED_COMMITTED_NOT_RUN
+phase_1_plan_documents=READY
 paid_api_called=false
 official_reviewer_graph_executed=false
 github_app_created=false
@@ -18,7 +19,7 @@ training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=REAL_MIMO_FIXED_DIFF_REVIEW_PROTOTYPE
+next_step=MIMO_PREFLIGHT
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -84,7 +85,7 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 
 ## 6. 当前分支对话任务
 
-当前主审核对话应先复审并提交 Phase 0 静态基线。之后建立一个分支对话，只完成 Phase 1 原型：
+Phase 0 静态基线已经提交并推送。Phase 1 的 `PLAN.md`、`CONCEPTS.md` 和 `RESULTS.md` 模板已经建立；下一步可将 `docs/phases/phase-01-local-diff-review/PLAN.md` 交给新的分支对话，只完成 Phase 1 原型：
 
 1. 运行一次 MiMo Tool Call 预检。
 2. 用最薄适配层把预配置 MiMo model 注入固定 Open SWE Reviewer 路径。

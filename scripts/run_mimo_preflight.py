@@ -9,7 +9,13 @@ import os
 import tempfile
 from pathlib import Path
 
-from open_swe_review_agent.mimo import MIMO_BASE_URL, MIMO_MODEL, MimoConfig, create_mimo_model
+from open_swe_review_agent.mimo import (
+    MIMO_BASE_URL,
+    MIMO_MODEL,
+    MimoConfig,
+    create_mimo_model,
+    validate_mimo_response_identity,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "artifacts" / "mimo_preflight.json"
@@ -34,6 +40,21 @@ def atomic_json(path: Path, payload: dict[str, object]) -> None:
         handle.write("\n")
         temporary = Path(handle.name)
     temporary.replace(path)
+
+
+def load_evidence() -> dict[str, object]:
+    evidence = json.loads(OUTPUT.read_text(encoding="utf-8"))
+    if evidence.get("status") != "PASS":
+        raise RuntimeError("PREFLIGHT_EVIDENCE_INVALID")
+    if evidence.get("configured_model") != MIMO_MODEL:
+        raise RuntimeError("PREFLIGHT_EVIDENCE_INVALID")
+    if evidence.get("response_model") != MIMO_MODEL or evidence.get("model") != MIMO_MODEL:
+        raise RuntimeError("PREFLIGHT_EVIDENCE_INVALID")
+    if evidence.get("finish_reason") != "tool_calls":
+        raise RuntimeError("PREFLIGHT_EVIDENCE_INVALID")
+    if evidence.get("transport") != "OPENAI_CHAT_COMPLETIONS" or evidence.get("tool_calls") != 1:
+        raise RuntimeError("PREFLIGHT_EVIDENCE_INVALID")
+    return evidence
 
 
 def execute(acknowledgement: str) -> None:
@@ -61,13 +82,17 @@ def execute(acknowledgement: str) -> None:
     call = calls[0]
     if call.get("name") != "record_preflight_status" or call.get("args") != {"status": "READY"}:
         raise RuntimeError("TOOL_CALL_SEMANTICS_MISMATCH")
+    response_model, finish_reason = validate_mimo_response_identity(response)
 
     usage = getattr(response, "usage_metadata", None) or {}
     atomic_json(
         OUTPUT,
         {
             "status": "PASS",
-            "model": MIMO_MODEL,
+            "configured_model": MIMO_MODEL,
+            "model": response_model,
+            "response_model": response_model,
+            "finish_reason": finish_reason,
             "base_url": MIMO_BASE_URL,
             "transport": "OPENAI_CHAT_COMPLETIONS",
             "tool_calls": 1,
@@ -91,7 +116,10 @@ def main() -> int:
     if args.check:
         if config.use_responses_api or config.base_url != MIMO_BASE_URL or config.model != MIMO_MODEL:
             raise RuntimeError("STATIC_MIMO_CONFIG_INVALID")
-        state = "PASS" if OUTPUT.exists() else "NOT_RUN"
+        state = "NOT_RUN"
+        if OUTPUT.exists():
+            load_evidence()
+            state = "PASS"
         print(
             f"VALID mimo-preflight model={config.model} transport=CHAT_COMPLETIONS "
             f"network={state}"

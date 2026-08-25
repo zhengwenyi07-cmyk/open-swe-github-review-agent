@@ -27,6 +27,19 @@ class MimoConfig:
     use_responses_api: bool = False
 
 
+def validate_mimo_response_identity(response: Any) -> tuple[str, str]:
+    """Return the API-reported model and finish reason or fail closed."""
+
+    metadata = getattr(response, "response_metadata", None) or {}
+    response_model = metadata.get("model_name") or metadata.get("model")
+    finish_reason = metadata.get("finish_reason")
+    if response_model != MIMO_MODEL:
+        raise ValueError("MiMo response model identity mismatch")
+    if finish_reason != "tool_calls":
+        raise ValueError("MiMo response finish reason mismatch")
+    return response_model, finish_reason
+
+
 def create_mimo_model(api_key: str, config: MimoConfig | None = None) -> Any:
     """Return a pre-configured LangChain model without making a network call."""
 
