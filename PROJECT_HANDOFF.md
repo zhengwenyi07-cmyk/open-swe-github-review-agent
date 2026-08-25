@@ -29,6 +29,11 @@ phase_3_review_decision=APPROVE
 phase_3_finding_count=0
 phase_3_uncertainty_count=1
 github_read_performed=true
+phase_4_plan_status=READY
+phase_4_implementation_status=IMPLEMENTED_NOT_RUN
+phase_4_target_status=NOT_APPROVED
+phase_4_prepare_status=NOT_RUN
+phase_4_publish_status=NOT_RUN
 official_reviewer_graph_executed=false
 github_app_created=false
 github_write_performed=false
@@ -38,7 +43,7 @@ training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
 git_remote_origin=PUSHED
-next_step=HUMAN_DECISION_GATE
+next_step=MAIN_REVIEW_COMMIT_THEN_CREATE_CONTROLLED_APP_AND_PR
 ```
 
 第一优先级是尽快获得可工作的 Diff Review 原型，不增加工业级证据冻结或新的前置阶段。
@@ -113,13 +118,15 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - 该 PR 没有冻结人工 Gold Finding，不能声称召回率或 Finding precision；只读模式未执行 PR 测试，`APPROVE` 不是运行时正确性证明。
 - Phase 3 共执行 4 次 GitHub GET，写请求为 0；没有执行 PR 代码、发布 Review 或自动重试。
 - Phase 3 专项离线测试 `25/25`、完整回归 `64` 项通过（另有 1 项既有已消费生命周期跳过）。
+- Phase 4 离线实现已完成：准备动作使用单仓库、`Pull requests: read` installation token，发布动作才请求 `write`；代码唯一仓库内容写路由为一次 Create Review，event 固定为 `COMMENT`。
+- Phase 4 专项测试 `32/32`，完整回归共运行 `96` 项并通过 `95` 项（另有 1 项既有生命周期跳过）；Head 漂移、重复 Marker、Payload/终态篡改、非法 POST JSON 的歧义对账、远端回执保留和凭据脱敏均有离线覆盖。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
 - 新仓库已完成首次提交并推送，`main` 正在跟踪 `origin/main`。
 
 ## 6. 当前分支对话任务
 
-Phase 2 与 Phase 3 都已完成一次性运行、人工复核和证据冻结，不允许补跑。当前停在人工决策门；Phase 4 必须由主对话单独设计和批准，不能自动发布评论、调用 GitHub 写接口、运行本地 4B 或训练。
+Phase 2 与 Phase 3 都已完成一次性运行、人工复核和证据冻结，不允许补跑。Phase 4 离线合同和 Fake 测试已经由分支实现，下一步是主对话代码复审与提交。复审通过后仍需先由用户创建单仓库 GitHub App 和受控测试 PR，再单独批准目标合同；准备结果产生后还要第二次人工批准精确 Payload Hash。上述两个批准缺一不可，不得发布评论、运行本地 4B 或训练。
 
 ## 7. 分支对话回报格式
 
@@ -146,7 +153,7 @@ Git状态：
 明确未执行内容：
 ```
 
-主对话收到结果后必须先区分：实现缺陷、基础设施失败、模型正常失败。Phase 2 与 Phase 3 均已结束，不能补跑或自动进入 Phase 4。
+主对话收到结果后必须先区分：实现缺陷、基础设施失败、模型正常失败。Phase 2 与 Phase 3 均已结束，不能补跑。Phase 4 当前停在离线实现复审门；不能自行创建 App/PR、调用 MiMo 或写入 GitHub。
 
 ## 8. 当前允许与禁止
 

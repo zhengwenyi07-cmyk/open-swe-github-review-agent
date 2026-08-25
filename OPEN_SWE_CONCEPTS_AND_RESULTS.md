@@ -199,8 +199,16 @@ Phase 3 只替换输入层：从一个主对话批准的 PR 读取 metadata、Ba
 
 1. 三题 Smoke 显示了跨类别的基本可用性，但样本量仍不足以证明广泛泛化能力。
 2. 官方完整 Reviewer Pregel graph 尚未运行。
-3. GitHub 只读已在一个公开 PR 上完成；样本量只有 1，最小 Review 发布和本地模型对照仍未开始。
+3. GitHub 只读已在一个公开 PR 上完成；样本量只有 1。Phase 4 最小写入离线合同已完成，但 GitHub App、测试 PR 和真实发布仍未开始。
 4. 严重度在三个可观察样本中均高估一级，仍需在后续只读样本中继续观察。
+
+### Phase 4：受控 GitHub Review 最小写入（离线实现完成）
+
+Phase 4 只增加一个变量：把经人工批准 Hash 的本地 Review Payload 发布到项目所有者控制的测试 PR。离线实现采用只安装到该仓库的 GitHub App，准备动作将 installation token 下压到 Pull requests read，发布动作才请求 read/write；代码层唯一允许的仓库内容写接口是 Create Review。
+
+为防止模型输出直接产生外部副作用，计划把准备与发布分开：准备动作只读 PR、调用 MiMo 一次并生成确定性 `publish_payload.json`；主对话逐字审核并提交 Payload Hash 合同后，发布动作才可执行一个 `event=COMMENT` 的 POST，且不得再次调用模型。Head 漂移、重复 Marker 或模糊写入状态均停止，不自动重试。
+
+当前这些都是设计，不是结果。不能声称 GitHub App 已部署、Review 已发布或幂等机制已经验证。
 
 ## 9. 后续结果记录模板
 

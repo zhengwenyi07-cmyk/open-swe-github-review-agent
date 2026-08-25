@@ -1,0 +1,12 @@
+{
+  "approval_status": "NOT_APPROVED",
+  "base_sha": null,
+  "event": "COMMENT",
+  "head_sha": null,
+  "max_write_requests": 1,
+  "payload_path": "artifacts/phase4/publish_payload.json",
+  "payload_sha256": null,
+  "pull_number": null,
+  "repository": null,
+  "version": "phase4_publish_approval_v1"
+}

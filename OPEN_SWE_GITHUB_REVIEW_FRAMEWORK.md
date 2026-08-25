@@ -2,11 +2,11 @@
 
 > 文档性质：可调整的研究与实现路线，不是不可变规格。
 >
-> 当前状态：Phase 0～3 已完成；Phase 3 已在公开 PR `pallets/click#3021` 上验证真实 GitHub 只读输入闭环。
+> 当前状态：Phase 0～3 已完成；Phase 4 的受控 GitHub Review 最小写入离线合同已实现，尚未运行。
 >
 > 第一优先级：尽快获得一个可工作的 GitHub Diff Review 原型。
 >
-> 当前唯一下一步：停在人工决策门，由主对话单独设计是否需要 Phase 4；禁止自动进入 GitHub 写入。
+> 当前唯一下一步：主对话复审并提交 Phase 4 离线实现；没有目标 PR 与 Payload 两次人工批准，不得写入 GitHub。
 
 ## 1. 为什么建立这个项目
 
@@ -190,13 +190,17 @@ Phase 0 只证明静态合同成立，没有证明官方 Open SWE Reviewer 或 M
 
 实际结果：目标合同单独批准公开 PR `pallets/click#3021` 后，Runner 用 4 次 GET 获取稳定的 Base/Head、3 个文件、4,659 bytes raw diff 和 38 个 candidate changed lines，并验证它们属于同一快照。MiMo 只调用一次，输出合同合法的 `APPROVE`、0 个 Finding、1 个锚定 `src/click/termui.py:122` 的 Uncertainty；没有重试、执行 PR 代码、运行测试或写入 GitHub。该 PR 没有冻结人工 Gold Finding，因此本阶段不报告召回率或 precision；`APPROVE` 也不是运行时正确性证明。六份本地产物经人工复审后原样冻结，当前停在人工决策门，不能自动进入 Phase 4。
 
-### Phase 4：最小 GitHub Review 写入（初步）
+### Phase 4：受控 GitHub Review 最小写入（离线实现完成、未运行）
 
-目标：把已在本地通过人工复核的 Review 发布到受控测试 PR。
+目标：在项目所有者控制的测试 PR 上，把已经本地生成、经人工复核并锁定 SHA256 的 Payload 恰好一次发布为 `COMMENT` 类型 GitHub Review。
 
-只允许发布 PR Review、创建/更新 Check Run、更新 Agent 自己创建的评论。继续禁止自动 Merge、默认分支 Push、仓库设置修改、删分支和无关仓库权限。
+Phase 4 固定采用只安装到测试仓库的最小权限 GitHub App。平台权限只开放 Pull requests read/write，代码层只允许一个仓库内容写 endpoint：`POST /repos/{owner}/{repo}/pulls/{number}/reviews`。禁止 Check Run、Issue Comment、独立 Review Comment、Approve/Request Changes、Merge、Branch/Contents 和 Repository 写入。
 
-验收结果：受控 PR 上出现一次正确 Review；重复运行不会制造重复评论；权限范围可解释。
+阶段保持一个整体，但真实运行有两个动作：先完成只读快照、单次 MiMo Review 和确定性 `publish_payload.json`，然后停止；主对话逐字审核并以单独合同绑定 Payload Hash 后，才允许单次发布。发布函数不得再次调用模型。Head 漂移、重复 Marker 或不确定 POST 状态均失败关闭，禁止盲目重试。
+
+详细实施计划、概念和结果模板见 `docs/phases/phase-04-controlled-review-publish/`。当前没有创建 GitHub App 或测试 PR，也没有实现 Publisher 或执行任何 GitHub 写入。
+
+验收结果：受控 PR 上出现一次可验证、无重复的 `COMMENT` Review；Review id、commit id、Marker 和本地 Payload 一致；GitHub App 权限和唯一写 endpoint 可解释；无其他仓库副作用。
 
 ### Phase 5：跨模型对照（可选，不预先承诺）
 

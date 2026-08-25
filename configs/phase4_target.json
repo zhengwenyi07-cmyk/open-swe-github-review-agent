@@ -1,0 +1,10 @@
+{
+  "approval_status": "NOT_APPROVED",
+  "authentication_mode": null,
+  "base_sha": null,
+  "head_sha": null,
+  "prepare_github_write_allowed": false,
+  "pull_number": null,
+  "repository": null,
+  "version": "phase4_target_v1"
+}

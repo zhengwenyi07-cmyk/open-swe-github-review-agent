@@ -26,7 +26,7 @@ Phase 1 已完成真实 MiMo Preflight 和固定 Diff Review。Phase 2 又在逻
 
 ### 下一步
 
-Phase 2 与 Phase 3 均已冻结且不补跑。项目停在人工决策门；是否设计 Phase 4 必须由主对话单独决定，GitHub 写权限仍不开放。
+Phase 2 与 Phase 3 均已冻结且不补跑。Phase 4 受控写入离线合同与 Fake 测试已完成，但 GitHub App、测试 PR 和真实发布均未开始。下一步是主对话复审提交；GitHub 写权限仍未开放。
 
 ## 3. STAR 版本（当前草稿）
 
@@ -115,7 +115,7 @@ GitHub 写权限会引入身份、权限、幂等和误发布风险。本地 JSO
 | Phase 1 | MiMo + 固定 Diff | 核心缺陷召回 1/1，误报 0；严重度偏高一级 | 完成 |
 | Phase 2 | MiMo + 3 题 Smoke | 人工召回 2/3、precision 2/2、误报 0；1 次合同失败，严重度均高估一级 | 完成 |
 | Phase 3 | MiMo + `pallets/click#3021`，只读 | 快照闭环通过；APPROVE、0 Finding、1 Uncertainty；4 GET、0 写入；未运行测试 | 完成 |
-| Phase 4 | 受控 GitHub PR，最小写入 | 待运行 | 未开始 |
+| Phase 4 | 受控 GitHub PR，最小权限 App + 人工批准 Payload | 离线实现完成；未运行 | 离线合同阶段 |
 | Phase 5 | 本地模型对照 | 根据前序结果决定 | 可选 |
 
 ## 9. 项目完成后应补充的面试材料
