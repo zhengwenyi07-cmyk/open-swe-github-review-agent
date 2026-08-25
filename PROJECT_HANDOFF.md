@@ -17,7 +17,7 @@ local_4b_run=false
 training_started=false
 old_mini_swe_project_modified=false
 github_repository=https://github.com/zhengwenyi07-cmyk/open-swe-github-review-agent
-git_remote_origin=CONFIGURED
+git_remote_origin=PUSHED
 next_step=REAL_MIMO_FIXED_DIFF_REVIEW_PROTOTYPE
 ```
 
@@ -80,7 +80,7 @@ GitHub 仓库已经创建，`origin` 固定为 `https://github.com/zhengwenyi07-
 - MiMo 离线检查为 `network=NOT_RUN`。
 - 旧项目 HEAD 为 `a6610921630c51a58efe3970c0bf8a6844e96c32`，工作区干净。
 - 官方 checkout 位于固定 Commit，工作区干净。
-- 新仓库尚未提交。
+- 新仓库已完成首次提交并推送，`main` 正在跟踪 `origin/main`。
 
 ## 6. 当前分支对话任务
 
